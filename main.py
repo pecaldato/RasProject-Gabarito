@@ -7,18 +7,19 @@ import numpy as np
 import xlsxwriter
 from os import walk
 import os
-from tkinter.ttk import Progressbar
 from time import sleep
 from termcolor import colored, cprint
 from tkinter import filedialog
 from tkinter import messagebox
+from tkinter.ttk import Progressbar
+from tkinter import scrolledtext
 from tkinter import *
 
 #Declarando algumas variáveis globais
 MAX_MATCHES = 5000
 GOOD_MATCH_PERCENT = 0.05
-
-gabaritoPath = None
+gabaritoPath = ""
+janela = Tk()
 
 
 def alignImages(im1, im2):
@@ -98,6 +99,7 @@ def getAnswer(contours, imReg):
 
       #Compare the central point to the Xo value of every letter and question number
       controladorRA = False
+      #verifica o RA
       for x in range(0,10):
         if(cX >= RAx[x][0] and cX <= RAx[x][1]):
           for j in range(0,4):
@@ -107,6 +109,7 @@ def getAnswer(contours, imReg):
               cv2.putText(imReg, str(x), (cX - 25, cY),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
               controladorRA = True
 
+      #Verifica as questões
       if (controladorRA == False):
         for x in range(0, 15):
           if (cX >= ListX[x][0] and cX <= ListX[x][1]):
@@ -149,6 +152,7 @@ def getAnswer(contours, imReg):
         listRet[j] = aux
 
 
+  #Insere os - nas questões deixadas em branco
   ctd = 1
   for x in range(0,len(listNumbers)):
     if (listNumbers[x]!=listNumbers[x-1]):
@@ -193,29 +197,11 @@ def compareTemplate(test, template):
   return correctAnswers, wrongAnswer
 
 
-
-
-
-
-#definindo a janela principal
-janela = Tk()
-janela.geometry("800x600")
-janela["bg"]= "gray"
-janela.title("Corretor de gabarito")
-janela.resizable(0,0)
-
-#verifica se as pastas ProvasParaCorrigir e ProvasCorrigidas existem,
-#Caso contrário o programa as cria
-if (not os.path.isdir('./ProvasParaCorrigir')):
-  os.mkdir("./ProvasParaCorrigir")
-  messagebox.showwarning('Alerta!', 'A pasta ProvasParaCorrigir não existia e por isso foi criada!\n'
-    'Coloque as fotos dos gabaritos dentro dela!')
-if (not os.path.isdir('./ProvasCorrigidas')):
-  os.mkdir("./ProvasCorrigidas")
-
 #Função main principal
 def iniciar():
-  
+  #Desabilita o botao Iniciar
+  btIniciar['state'] = 'disable'
+
   # Read reference image
   refFilename = "baseGabaritoNovo.jpeg"
   print("Reading reference image : ", refFilename)
@@ -228,9 +214,8 @@ def iniciar():
   
   if (True):
     # Utiliza a imagem que o usuário selecionou.
+    print(gabaritoPath)
     im = cv2.imread(gabaritoPath, cv2.IMREAD_COLOR)
-    cv2.imshow("teste",im)
-    cv2.waitKey(0)
     
     #Alinha a imagem do gabarito com a imagem base
     imReg, h = alignImages(im, imReference)
@@ -261,14 +246,14 @@ def iniciar():
     row = 0
     col = 0
 
-    ctd = 0
+    ctd = 1
     #Varre todos os arquivos encontrados na pasta ProvasParaCorrigir
     for f in files:
       if(True):
         #Verifica se o arquivo realmente existe, e caso não seja uma imagem
         #informa o erro ao usuario e continua corrigindo as demais provas
         fh = open("ProvasParaCorrigir/"+f, 'r')
-        im = cv2.imread("ProvasParaCorrigir/"+f, cv2.IMREAD_COLOR)
+        im = cv2.imread("ProvasParaCorrigir/"+f, cv2.IMREAD_COLOR)        
 
         #Lê a prova
         imReg, h = alignImages(im, imReference)
@@ -325,26 +310,50 @@ def iniciar():
 
         col = 0
         row += 2  
-        
+
+        #Atualiza os valores da ProgressBar
         progressBar['value'] = (ctd*100)/len(files)
+        janela.update_idletasks()
       #except:
-        #bar.update(ctd+1)
-        #print(colored("\nErro ao carregar o arquivo " + f + '\n','red'))
+        # progressBar['value'] = (ctd*100)/len(files)
+        # janela.update_idletasks()
       ctd+=1 
     workbook.close()
     
   #except:
     #print("O arquivo fornecido não foi encontrado. Verifique se o mesmo existe e se está na extensão correta!")
+  btIniciar['state'] = 'normal'
 
 
+#Função para o usuario selecionar o arquivo que será usado como gabarito
+#Após selecionado, a função irá atribuir o caminho a variável global gabaritoPath para ser usado no Iniciar()
+#Apenas depois de um arquivo ser selecionado que é liberado o botao Iniciar
 def getGabaritoPath ():
   janela.filename =  filedialog.askopenfilename(initialdir = os.path.dirname(__file__),title = "Select file",filetypes = 
       (("jpeg files","*.jpg"),("all files","*.*")))
 
+  global gabaritoPath 
   gabaritoPath = str(janela.filename)
   btIniciar['state'] = 'normal'
   lblGabarito['text'] = 'Gabarito selecionado:\n'+gabaritoPath
 
+
+##############################################################################################################################
+
+#definindo a janela principal
+janela.geometry("800x600")
+janela["bg"]= "gray"
+janela.title("Corretor de gabarito")
+janela.resizable(0,0)
+
+#verifica se as pastas ProvasParaCorrigir e ProvasCorrigidas existem,
+#Caso contrário o programa as cria e informa ao usuario oq deve ser feito
+if (not os.path.isdir('./ProvasParaCorrigir')):
+  os.mkdir("./ProvasParaCorrigir")
+  messagebox.showwarning('Alerta!', 'A pasta ProvasParaCorrigir não existia e por isso foi criada!\n'
+    'Coloque as fotos dos gabaritos dentro dela!')
+if (not os.path.isdir('./ProvasCorrigidas')):
+  os.mkdir("./ProvasCorrigidas")
 
 
 #Definindo os botões
@@ -357,23 +366,22 @@ lblGabarito.place(x=50, y=140)
 btIniciar=Button(janela, width=10, height=3, text="Iniciar", command=iniciar, state='disable')
 btIniciar.place(x=500, y=50)
 
-# btParar=Button(janela, width=10, height=3, text="Parar")
-# btParar.place(x=500, y=150)
+btParar=Button(janela, width=10, height=3, text="Parar")
+btParar.place(x=500, y=150)
 
 progressBar = Progressbar(janela, length=550)
 progressBar.place(x=50, y= 250)
 
+caixaTexto = scrolledtext.ScrolledText(janela,width=68,height=10)
+caixaTexto.place(x=50, y= 300)
+
+
 janela.mainloop()
 
 """
-O programa esta executando tudo pelo botão iniciar
-Ao clicar nele o usuário deve selecionar a foto do gabarito preenchido
-com as respostas das provas
-Após isso o programa já executa a correção de todas as provas localizadas na pasta
-provas para corrigir
 Falta deixar mais explicativo para o usuário.
 Minha ideia é de criar um .rar com todos os aquivos necessários para o programa ser
-executado, bem como a pasta provaparacorrigir, que o programa deverrá informar
+executado, que o programa deverrá informar
 o usuário que deve colocar todos os arquivos das provas escaneadas nele
 Além disso, o programa deve localizar também o gabarito base, sem ser preenchido.
 Este arquivo na verdade são dois, o inNatura e o cortado de nomes baseGabaritoNovo e 
