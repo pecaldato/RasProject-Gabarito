@@ -1,14 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*- 
-
-from __future__ import print_function
 import cv2
 import numpy as np
 import xlsxwriter
 from os import walk
 import os
 from time import sleep
-from termcolor import colored, cprint
 from tkinter import filedialog
 from tkinter import messagebox
 from tkinter.ttk import Progressbar
@@ -16,6 +13,7 @@ from tkinter import scrolledtext
 from tkinter import *
 import tkinter as tk
 from tkinter import Menu
+import threading
 
 #Declarando algumas variáveis globais
 MAX_MATCHES = 5000
@@ -26,6 +24,7 @@ caixaTexto = None
 pause = False
 btParar = None
 nomeGabarito = []
+stop_threads = False
 
 
 def alignImages(im1, im2):
@@ -183,6 +182,7 @@ def getAnswer(contours, imReg):
     x = ctd
     listOrder.append(aux)
 
+  #Cria uma string com o RA do aluno
   RA[::-1]
   if (len(RA)!= 4):
     RA = "Não identificado"
@@ -208,19 +208,17 @@ def compareTemplate(test, template):
 def iniciar():
   #Limpa a caixa de texto
   caixaTexto.delete(1.0,tk.END)
+  global pause
+  global stop_threads
   pause = False
 
   #Desabilita o botao Iniciar
   btIniciar['state'] = 'disable'
 
   # Read reference image
-  refFilename = "baseGabaritoNovo.jpeg"
-  print("Reading reference image : ", refFilename)
-  imReference = cv2.imread(refFilename, cv2.IMREAD_COLOR)
-
-  refFilename = "baseGabaritoNovoCortado.jpeg"
-  print("Reading reference image : ", refFilename)
-  imReference2 = cv2.imread(refFilename, cv2.IMREAD_COLOR)
+  #Para evitar que o usuário edite as imagens essencias do programa, elas foram transformadas em npy
+  imReference = np.load("base.npy")
+  imReference2 = np.load("baseCortado.npy")
 
   
   try:
@@ -259,11 +257,15 @@ def iniciar():
     ctd = 1
     #Varre todos os arquivos encontrados na pasta ProvasParaCorrigir
     for f in files:
+
+      #Caso o botão de fechar seja precionado e a thread estiver em execusão, esse if finaliza a mesma
+      if stop_threads:
+        return
+
+      #deixa o programa em loop infinito quando o botão Pausar for apertado, impedindo que termine a correção
       while (pause):
-        aux = 1
-        if i:
-          caixaTexto.insert(tk.INSERT,'Programa pausado!\n','error')
-          aux = 0
+        if stop_threads:
+          return
 
       try:
         #Verifica se o arquivo realmente existe, e caso não seja uma imagem
@@ -280,7 +282,6 @@ def iniciar():
         gray = cv2.cvtColor(blurred,cv2.COLOR_BGR2GRAY)
         threshold = cv2.adaptiveThreshold(gray,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,cv2.THRESH_BINARY,15,8)
         contours,_ = cv2.findContours(threshold,cv2.RETR_LIST,cv2.CHAIN_APPROX_NONE)
-        # cv2.drawContours(imReg, contours, -1, (0,255,0), 3)
 
 
         #Retorna a lista com as letras assinaladas pelo aluno da prova
@@ -339,11 +340,18 @@ def iniciar():
       ctd+=1 
     workbook.close()
     caixaTexto.insert(tk.INSERT,'Todas as provas foram corrigidas!\n','done')
+    btParar['state'] = 'disable'
     
   except:
     caixaTexto.insert(tk.INSERT,'Não foi possível carregar o gabarito selecionado! Verifique a extensão '
     'e integridade do arquivo!\n','error')
   btIniciar['state'] = 'normal'
+
+
+
+##############################################################################################################################
+#########     A PARTIR DAQUI COMEÇA AS FUNÇÕES E CÓDIGOS RELACIONADOS A PARTE VISUAL               ###########################
+##############################################################################################################################
 
 
 #Função para o usuario selecionar o arquivo que será usado como gabarito
@@ -355,6 +363,7 @@ def getGabaritoPath ():
 
   global gabaritoPath 
   global nomeGabarito
+  nomeGabarito = []
   gabaritoPath = str(janela.filename)
   btIniciar['state'] = 'normal'
   i = len(gabaritoPath)-1
@@ -364,15 +373,22 @@ def getGabaritoPath ():
   nomeGabarito = nomeGabarito[::-1]
   lblGabarito['text'] = 'Gabarito selecionado:\n'+''.join(nomeGabarito)
 
+
+#Esta função torna a variável global pause como verdadeira ou false. Dependendo do valor dela
+#a função Iniciar() fica em um loop infinito, impossibilitando que a correção continue. A função
+#também muda o nome do botão.
 def pausar ():
   global pause
   if pause:
     pause = False
     btParar['text'] = 'Pausar'
+    caixaTexto.insert(tk.INSERT,'Programa retomado!\n','done')
   else:
     pause = True
     btParar['text'] = 'Retomar'
+    caixaTexto.insert(tk.INSERT,'Programa pausado!\n','error')
 
+#Função que informa ao usuário como utilizar o programa ao apertar o botão "Ajuda"
 def ajuda ():
   caixaTexto.delete(1.0,tk.END)
   caixaTexto.insert(tk.INSERT,'Ao iniciar o programa pela primeira vez será criado duas pastas, a "ProvasParaCorrigir" e '
@@ -390,6 +406,7 @@ def ajuda ():
                     'Excel com os resultados de cada prova!\n')
   caixaTexto.insert(tk.INSERT,'APROVEITE!! =)','done')
 
+#Função que informa ao usuário algumas informações básicas do programa
 def sobre ():
   caixaTexto.delete(1.0,tk.END)
   caixaTexto.insert(tk.INSERT,'Este programa foi criado sem fins comerciais com a finalidade de colaborar com a correção das '
@@ -398,7 +415,22 @@ def sobre ():
                     'Com a supervisão de:\n Vitor Vecina\n','done')
 
 
-##############################################################################################################################
+#Declara a thread que será usado na função Iniciar()
+t = threading.Thread(target=iniciar,)
+#Inicia a thread quando o usuário aperta o botão "Iniciar"
+def iniciandoThread():
+  btParar['state'] = 'normal'
+  t.start()
+
+#Função que pergunta ao usuário se ele realmente quer fechar o programa quando o botão fechar é pressionado 
+def on_closing():
+  if (t.isAlive):
+    if messagebox.askokcancel("Sair", "Realmente deseja sair?"):
+      janela.destroy()
+      global stop_threads
+      stop_threads = True
+
+
 
 #definindo a janela principal
 janela.geometry("675x600")
@@ -416,18 +448,18 @@ if (not os.path.isdir('./ProvasCorrigidas')):
   os.mkdir("./ProvasCorrigidas")
 
 
-#Definindo os botões
+#Definindo os botões, caixas de texto, menu bar, progress bar, labels, etc.
 btGabarito=Button(janela, width=15, height=4, text="Selecinar\n Gabarito", command=getGabaritoPath,)
 btGabarito.place(x=50, y=50)
 
 lblGabarito = Label(janela, text="Gabarito selecionado:", font=("Arial Bold", 10),bg='gray')
-lblGabarito.place(x=250, y=70)
+lblGabarito.place(x=250, y=150)
 
-btIniciar=Button(janela, width=15, height=4, text="Iniciar", command=iniciar, state='disable')
-btIniciar.place(x=450, y=50)
+btIniciar=Button(janela, width=15, height=4, text="Iniciar", command=iniciandoThread, state='disable')
+btIniciar.place(x=250, y=50)
 
-# btParar=Button(janela, width=15, height=4, text="Parar", command=pausar)
-# btParar.place(x=450, y=50)
+btParar=Button(janela, width=15, height=4, text="Pausar", command=pausar, state='disable')
+btParar.place(x=450, y=50)
 
 progressBar = Progressbar(janela, length=547)
 progressBar.place(x=50, y= 200)
@@ -442,22 +474,15 @@ menu.add_command(label='Ajuda', command=ajuda)
 menu.add_command(label='Sobre', command=sobre)
 janela.config(menu=menu)
 
-canvas = Canvas(janela, width = 365, height = 138)      
-canvas.pack()      
-img = PhotoImage(file="principia.png")      
-canvas.create_image(0,0, anchor=tk.NW, image=img)      
-canvas.place(x=140,y=440)
-mainloop()    
+try:
+  canvas = Canvas(janela, width = 365, height = 138)      
+  canvas.pack()      
+  img = PhotoImage(file="principia.png")     
+  canvas.create_image(0,0, anchor=tk.NW, image=img)      
+  canvas.place(x=140,y=440)
+except:
+  pass
 
-
+#Verifica se o botão de fechar foi abertado. Chama a função on_closing em caso positivo
+janela.protocol("WM_DELETE_WINDOW", on_closing)
 janela.mainloop()
-
-"""
-Falta deixar mais explicativo para o usuário.
-Minha ideia é de criar um .rar com todos os aquivos necessários para o programa ser
-executado, que o programa deverrá informar
-o usuário que deve colocar todos os arquivos das provas escaneadas nele
-Além disso, o programa deve localizar também o gabarito base, sem ser preenchido.
-Este arquivo na verdade são dois, o inNatura e o cortado de nomes baseGabaritoNovo e 
-baseGabaritoNovoCortado
-"""
