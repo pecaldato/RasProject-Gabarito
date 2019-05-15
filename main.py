@@ -415,20 +415,19 @@ def sobre ():
                     'Com a supervisão de:\n Vitor Vecina\n','done')
 
 
-#Declara a thread que será usado na função Iniciar()
-t = threading.Thread(target=iniciar,)
 #Inicia a thread quando o usuário aperta o botão "Iniciar"
 def iniciandoThread():
+  #Declara a thread que será usado na função Iniciar()
+  t = threading.Thread(target=iniciar,)
   btParar['state'] = 'normal'
   t.start()
 
 #Função que pergunta ao usuário se ele realmente quer fechar o programa quando o botão fechar é pressionado 
 def on_closing():
-  if (t.isAlive):
-    if messagebox.askokcancel("Sair", "Realmente deseja sair?"):
-      janela.destroy()
-      global stop_threads
-      stop_threads = True
+  if messagebox.askokcancel("Sair", "Realmente deseja sair?"):
+    janela.destroy()
+    global stop_threads
+    stop_threads = True
 
 
 
