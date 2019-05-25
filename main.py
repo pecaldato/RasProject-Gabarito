@@ -282,12 +282,16 @@ def iniciar():
         #pelo usuario
         correctAnswers, wrongAnswer = compareTemplate(prova,template)
 
+        #Verifica grandes erros de alinhamentos. Se o mesmo houver força uma exceção
+        if (len(correctAnswers)+len(wrongAnswer) < 50):
+          raise ValueError()
+
         #Transfere a imagem da pasta ProvasParaCorrigir para a pasta ProvasCorrigidas
-        #os.rename("./ProvasParaCorrigir/"+f, "../ProvasCorrigidas/"+f)
+        os.rename("./ProvasParaCorrigir/"+f, "./ProvasCorrigidas/"+f)
 
         #Cria outra imagem referente a prova que foi corrigida porem com as letras e numeros em cima
         #das bolinhas que o aluno assinalou caso precise verificar algum possivel erro no programa
-        cv2.imwrite("ProvasCorrigidas/"+RA+"-"+f, imReg)
+        cv2.imwrite("ProvasCorrigidas/Resolucao/"+RA+"-"+f, imReg)
         
         #Escreve o nome da imagem, a quantidade de questões que o aluno acertou, a quantidade de questões que o aluno errou,
         #as questões acertadas e erradas no arquivo Excel
@@ -326,7 +330,8 @@ def iniciar():
         janela.update_idletasks()
       except:
         try:
-          caixaTexto.insert(tk.INSERT,'Erro ao abrir o arquivo '+f+". Verifique a extensão\n",'error')
+          caixaTexto.insert(tk.INSERT,'Erro ao abrir ou alinhar o arquivo '+f+". Verifique a extensão e a qualidade"
+          "da imagem\n",'error')
           progressBar['value'] = (ctd*100)/len(files)
           janela.update_idletasks()
         except:
@@ -439,6 +444,9 @@ if (not os.path.isdir('./ProvasParaCorrigir')):
     'Coloque as fotos dos gabaritos dentro dela!')
 if (not os.path.isdir('./ProvasCorrigidas')):
   os.mkdir("./ProvasCorrigidas")
+  os.mkdir("./ProvasCorrigidas/Resolucao")
+if (not os.path.isdir('./ProvasCorrigidas/Resolucao')):
+  os.mkdir("./ProvasCorrigidas/Resolucao")
 
 
 #Definindo os botões, caixas de texto, menu bar, progress bar, labels, etc.
