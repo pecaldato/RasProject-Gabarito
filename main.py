@@ -408,10 +408,10 @@ def sobre ():
                     'Com a supervisão de:\n Vitor Vecina\n','done')
 
 
-#Declara a thread que será usado na função Iniciar()
-
 #Inicia a thread quando o usuário aperta o botão "Iniciar"
 def iniciandoThread():
+  #Declara a thread que será usado na função Iniciar()
+  t = threading.Thread(target=iniciar,)
   btParar['state'] = 'normal'
   thread = threading.Thread(target=iniciar,)
   thread.start()
