@@ -21,7 +21,6 @@ GOOD_MATCH_PERCENT = 0.05
 gabaritoPath = ""
 janela = Tk()
 caixaTexto = None
-pause = False
 btParar = None
 nomeGabarito = []
 stop_threads = False
@@ -208,9 +207,7 @@ def compareTemplate(test, template):
 def iniciar():
   #Limpa a caixa de texto
   caixaTexto.delete(1.0,tk.END)
-  global pause
   global stop_threads
-  pause = False
 
   #Desabilita o botao Iniciar
   btIniciar['state'] = 'disable'
@@ -257,21 +254,15 @@ def iniciar():
     ctd = 1
     #Varre todos os arquivos encontrados na pasta ProvasParaCorrigir
     for f in files:
-
       #Caso o botão de fechar seja precionado e a thread estiver em execusão, esse if finaliza a mesma
       if stop_threads:
-        return
-
-      #deixa o programa em loop infinito quando o botão Pausar for apertado, impedindo que termine a correção
-      while (pause):
-        if stop_threads:
-          return
-
+        stop_threads = False
+        return 
       try:
         #Verifica se o arquivo realmente existe, e caso não seja uma imagem
         #informa o erro ao usuario e continua corrigindo as demais provas
         fh = open("ProvasParaCorrigir/"+f, 'r')
-        im = cv2.imread("ProvasParaCorrigir/"+f, cv2.IMREAD_COLOR)        
+        im = cv2.imread("ProvasParaCorrigir/"+f, cv2.IMREAD_COLOR)       
 
         #Lê a prova
         imReg, h = alignImages(im, imReference)
@@ -334,11 +325,17 @@ def iniciar():
         progressBar['value'] = (ctd*100)/len(files)
         janela.update_idletasks()
       except:
-        caixaTexto.insert(tk.INSERT,'Erro ao abrir o arquivo '+f+". Verifique a extensão\n",'error')
-        progressBar['value'] = (ctd*100)/len(files)
-        janela.update_idletasks()
+        try:
+          caixaTexto.insert(tk.INSERT,'Erro ao abrir o arquivo '+f+". Verifique a extensão\n",'error')
+          progressBar['value'] = (ctd*100)/len(files)
+          janela.update_idletasks()
+        except:
+          pass
       ctd+=1 
     workbook.close()
+    if stop_threads:
+        stop_threads = False
+        return 
     caixaTexto.insert(tk.INSERT,'Todas as provas foram corrigidas!\n','done')
     btParar['state'] = 'disable'
     
@@ -378,15 +375,11 @@ def getGabaritoPath ():
 #a função Iniciar() fica em um loop infinito, impossibilitando que a correção continue. A função
 #também muda o nome do botão.
 def pausar ():
-  global pause
-  if pause:
-    pause = False
-    btParar['text'] = 'Pausar'
-    caixaTexto.insert(tk.INSERT,'Programa retomado!\n','done')
-  else:
-    pause = True
-    btParar['text'] = 'Retomar'
-    caixaTexto.insert(tk.INSERT,'Programa pausado!\n','error')
+  global stop_threads
+  stop_threads = True
+  btParar['state'] = 'disable'
+  btIniciar['state'] = 'normal'
+  caixaTexto.insert(tk.INSERT,'Correção cancelada!\n','done')
 
 #Função que informa ao usuário como utilizar o programa ao apertar o botão "Ajuda"
 def ajuda ():
@@ -416,19 +409,19 @@ def sobre ():
 
 
 #Declara a thread que será usado na função Iniciar()
-t = threading.Thread(target=iniciar,)
+
 #Inicia a thread quando o usuário aperta o botão "Iniciar"
 def iniciandoThread():
   btParar['state'] = 'normal'
-  t.start()
+  thread = threading.Thread(target=iniciar,)
+  thread.start()
 
 #Função que pergunta ao usuário se ele realmente quer fechar o programa quando o botão fechar é pressionado 
 def on_closing():
-  if (t.isAlive):
-    if messagebox.askokcancel("Sair", "Realmente deseja sair?"):
-      janela.destroy()
-      global stop_threads
-      stop_threads = True
+  global stop_threads
+  if messagebox.askokcancel("Sair", "Realmente deseja sair?"):    
+    stop_threads = True
+    janela.destroy()
 
 
 
@@ -458,7 +451,7 @@ lblGabarito.place(x=250, y=150)
 btIniciar=Button(janela, width=15, height=4, text="Iniciar", command=iniciandoThread, state='disable')
 btIniciar.place(x=250, y=50)
 
-btParar=Button(janela, width=15, height=4, text="Pausar", command=pausar, state='disable')
+btParar=Button(janela, width=15, height=4, text="Cancelar", command=pausar, state='disable')
 btParar.place(x=450, y=50)
 
 progressBar = Progressbar(janela, length=547)
