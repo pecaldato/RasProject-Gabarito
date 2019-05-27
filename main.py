@@ -14,6 +14,7 @@ from tkinter import *
 import tkinter as tk
 from tkinter import Menu
 import threading
+import shutil
 
 #Declarando algumas variáveis globais
 MAX_MATCHES = 5000
@@ -261,7 +262,7 @@ def iniciar():
       try:
         #Verifica se o arquivo realmente existe, e caso não seja uma imagem
         #informa o erro ao usuario e continua corrigindo as demais provas
-        fh = open("ProvasParaCorrigir/"+f, 'r')
+        #fh = open("ProvasParaCorrigir/"+f, 'r')
         im = cv2.imread("ProvasParaCorrigir/"+f, cv2.IMREAD_COLOR)       
 
         #Lê a prova
@@ -287,7 +288,10 @@ def iniciar():
           raise ValueError()
 
         #Transfere a imagem da pasta ProvasParaCorrigir para a pasta ProvasCorrigidas
-        os.rename("./ProvasParaCorrigir/"+f, "./ProvasCorrigidas/"+f)
+        #os.rename("./ProvasParaCorrigir/"+f, "./ProvasCorrigidas/"+f)
+        dirpath = os.getcwd()
+        # print(dirpath)
+        shutil.move(dirpath + "/ProvasParaCorrigir/"+f, dirpath+"/ProvasCorrigidas/"+f)
 
         #Cria outra imagem referente a prova que foi corrigida porem com as letras e numeros em cima
         #das bolinhas que o aluno assinalou caso precise verificar algum possivel erro no programa
