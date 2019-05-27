@@ -45,7 +45,10 @@ Feito isso, siga os passos a seguir:
 
 5° Clique no botão "Selecione o Gabarito" e selecione o arquivo das respostas oficiais. Verifique se a opção "mostrar todos os tipos de aquivos" está habilitada.
 
-6° Selecionado o arquivo das respostas oficiais, a pasta "ProvasParaCorrigir" será criada na pasta raíz do programa. É nesta pasta que deverá ser colocado todas as fotos ou scaners das provas dos alunos para que o prorama possa corrigí-las.
+![](TutorialGift/ezgif.com-gif-maker.gif)
+
+
+6° Selecionado o arquivo das respostas oficiais, a pasta "ProvasParaCorrigir" será criada na pasta raíz do programa. É nesta pasta que deverá ser colocado todas as fotos ou scaners das provas dos alunos para que o programa possa corrigí-las.
 
 7° Quando as provas dos alunos estiverem dentro da pasta "ProvasParaCorrigir", clique sobre o botão "Iniciar". Após isso, o programa irá começar o processo de correção das provas.
 
