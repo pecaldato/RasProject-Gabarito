@@ -31,7 +31,7 @@ A instalação do programa corretor de gabaritos é bem simples, basta seguir os
 
 ### Como utilizar?
 
-Para utilizar o programa corretor de gabaritos é necessário que ele esteja instalado em sua máquina. Para isso, execute os passos listamos acima.
+Para utilizar o programa corretor de gabaritos é necessário que ele esteja instalado em sua máquina. Para isso, execute os passos listados acima.
 
 Feito isso, siga os passos a seguir:
 
@@ -39,7 +39,7 @@ Feito isso, siga os passos a seguir:
 
 2° Uma vez impressa todas as cópias necessárias para aplicação da prova, é necessário que se preencha uma das cópias com as respostas corretas das questões. Essa folha será lida posteriosmente no programa corretor de gabaritos como o modelo de respostas esperadas pelos alunos.
 
-3° Feito o preenchimento das respostas corretas em uma das folhas, é necessário que se tire uma foto ou que esta folha oficial seja escaneada.
+3° Feito o preenchimento das respostas corretas em uma das folhas, é necessário que se tire uma foto ou que esta folha "oficial" seja escaneada.
 
 4° Após isso, abra o programa corretor de gabaritos.
 
