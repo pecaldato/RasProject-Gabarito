@@ -1,37 +1,33 @@
 # RasProject - Gabarito
 
-Este programa foi desenvolvido pelo grupo Beta do Projetos Ras - IEEE - Unesp Bauru, sem fins lucrativos e para colaborar com o cursinho Princípia (Cursinho da Unesp Bauru).
-O programa tem a finalidade de corrigir as provas (cujo gabarito está na página do projeto do GitHub) de forma automatica e com a possibilidade de utilizar fotos das provas dos alunos, ou seja, não é necessário a utilização de um escaner para o funcionamento do programa.
+Este programa tem a finalidade de corrigir automaticamente as provas, sem a necessidade do trabalho mecânico humano. Para isso, basta tirar uma foto da prova do aluno com qualquer dispositivo e disponibilizar na pasta correspondente. Também é possível utilizar um scanner para tal fim. Para que o programa execute sua função normalmente é necessário que se utilize o modelo de gabarito disponibilizado na pasta raiz do git hub.
+Tal programa foi desenvolvido pelo grupo Beta do Projetos Ras - IEEE - Unesp Bauru, sem fins lucrativos e com o objetivo de auxiliar o cursinho Princípia (Cursinho da Unesp Bauru).
 
 ## Getting Started
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
-### Prerequisites
+### Pré-requisito
 
-What things you need to install the software and how to install them
-
-```
-Give examples
-```
-
-### Installing
-
-A step by step series of examples that tell you how to get a development env running
-
-Say what the step will be
+Para executar o programa corretor de gabaritos basta ter o sistema Windows e um descompactador de arquivos, como o WinRar instalado em sua máquina.
 
 ```
-Give the example
-```
-
-And repeat
+-Sistema Operacional: Windows 7, Windowns 8 ou Windows 10 - 32/64bits
+-Descompactador de arquivos: WinRar
 
 ```
-until finished
-```
 
-End with an example of getting some data out of the system or using it for a little demo
+### Instalação
+
+A instalação do programa corretor de gabaritos é bem simples, basta seguir os passos a seguir:
+
+1° Após conferir a instalação do programa descompactador de arquivos em sua máquina é necessário baixar os arquivos do programa corretor de gabaritos dando um "Clone or Download" e selecionando a opção "Download Zip".
+
+2° Feito o download do arquivo zip, descompacte-o com seu descompactador de arquivos para o local desejado.
+
+3° Abra a pasta com os arquivos descompactados e execute o arquivo "main.exe".
+
+4° Pronto! O programa corretor de gabaritos está pronto para ser utilizado.
 
 ## Running the tests
 
