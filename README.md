@@ -21,13 +21,35 @@ Para executar o programa corretor de gabaritos basta ter o sistema Windows e um 
 
 A instalação do programa corretor de gabaritos é bem simples, basta seguir os passos a seguir:
 
-1° Após conferir a instalação do programa descompactador de arquivos em sua máquina é necessário baixar os arquivos do programa corretor de gabaritos dando um "Clone or Download" e selecionando a opção "Download Zip".
+1° Após conferir a instalação do programa descompactador de arquivos em sua máquina é necessário baixar os arquivos do programa corretor de gabaritos clicando em "Clone or Download" na pasta do git e selecionando a opção "Download Zip".
 
 2° Feito o download do arquivo zip, descompacte-o com seu descompactador de arquivos para o local desejado.
 
 3° Abra a pasta com os arquivos descompactados e execute o arquivo "main.exe".
 
 4° Pronto! O programa corretor de gabaritos está pronto para ser utilizado.
+
+### Como utilizar?
+
+Para utilizar o programa corretor de gabaritos é necessário que ele esteja instalado em sua máquina. Para isso, execute os passos listamos acima.
+
+Feito isso, siga os passos a seguir:
+
+1° Localize o arquivo "Gabarito-Oficial.jpg" que se encontra na pasta raiz do programa corretor de gabaritos. Esse arquivo será utilizado para impressão das provas.
+
+2° Uma vez impressa todas as cópias necessárias para aplicação da prova, é necessário que se preencha uma das cópias com as respostas corretas das questões. Essa folha será lida posteriosmente no programa corretor de gabaritos como o modelo de respostas esperadas pelos alunos.
+
+3° Feito o preenchimento das respostas corretas em uma das folhas, é necessário que se tire uma foto ou que esta folha oficial seja escaneada.
+
+4° Após isso, abra o programa corretor de gabaritos.
+
+5° Clique no botão "Selecione o Gabarito" e selecione o arquivo das respostas oficiais. Verifique se a opção "mostrar todos os tipos de aquivos" está habilitada.
+
+6° Selecionado o arquivo das respostas oficiais, a pasta "ProvasParaCorrigir" será criada na pasta raíz do programa. É nesta pasta que deverá ser colocado todas as fotos ou scaners das provas dos alunos para que o prorama possa corrigí-las.
+
+7° Quando as provas dos alunos estiverem dentro da pasta "ProvasParaCorrigir", clique sobre o botão "Iniciar". Após isso, o programa irá começar o processo de correção das provas.
+
+8° Quando o programa acabar de corrigir todas as provas, uma planilha excel com o nome "Resultados" irá ser criada na pasta raiz do programa, indicando o número de inscrição do aluno, quantos e quais foram os acertos.
 
 ## Running the tests
 
