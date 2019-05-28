@@ -1,30 +1,18 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*- 
+
+from __future__ import print_function
 import cv2
 import numpy as np
 import xlsxwriter
 from os import walk
 import os
+import progressbar
 from time import sleep
-from tkinter import filedialog
-from tkinter import messagebox
-from tkinter.ttk import Progressbar
-from tkinter import scrolledtext
-from tkinter import *
-import tkinter as tk
-from tkinter import Menu
-import threading
-import shutil
 
-#Declarando algumas variáveis globais
+#5000 0.10
 MAX_MATCHES = 5000
-GOOD_MATCH_PERCENT = 0.05
-gabaritoPath = ""
-janela = Tk()
-caixaTexto = None
-btParar = None
-nomeGabarito = []
-stop_threads = False
+GOOD_MATCH_PERCENT = 0.06
 
 
 def alignImages(im1, im2):
@@ -50,8 +38,8 @@ def alignImages(im1, im2):
   matches = matches[:numGoodMatches]
 
   # Draw top matches
-  # imMatches = cv2.drawMatches(im1, keypoints1, im2, keypoints2, matches, None)
-  # cv2.imwrite("matches.jpg", imMatches)
+  #imMatches = cv2.drawMatches(im1, keypoints1, im2, keypoints2, matches, None)
+  #cv2.imwrite("matches.jpg", imMatches)
   
   # Extract location of good matches
   points1 = np.zeros((len(matches), 2), dtype=np.float32)
@@ -80,20 +68,23 @@ def getAnswer(contours, imReg):
   ListY = [[274,291],[297,315],[322,340],[347,365],[371,390],[396,414],[420,439],[445,463],[469,487],[494,512],[531,549],
   [556,574],[580,598],[605,622],[629,647],[653,672],[678,696], [702,721],[727,745],[751,770],[17,35],[41,59],[66,84],
   [90,108],[115,133],[140,157],[163,181],[189,207],[212,231],[237,255]]
-
+  
   RAx = [[148,164],[168,184],[188,204], [208,224], [228,244], [248,264],[268,284],[288,304],[308,324],[328,344]]
   RAy = [[124,140],[148,164],[172,188],[196,212]]
+
 
   #Declaring the list which have the letters of the questions
   listRet = []
   listNumbers = []
-  RA = ''
-
+  listRA = []
 
   #Take the central pixel of the contours and compare to the lists
   for c in contours:
     #Only takes the central point of contours who have 100<Area<350
-    if 100<cv2.contourArea(c)<300:
+    if 100<cv2.contourArea(c)<350:
+
+      cv2.drawContours(imReg, c, -1, (0,255,0), 3)
+
       # calculate moments for each contour
       M = cv2.moments(c)
  
@@ -102,53 +93,47 @@ def getAnswer(contours, imReg):
       cY = int(M["m01"] / M["m00"])
 
       #Compare the central point to the Xo value of every letter and question number
-      controladorRA = False
-      #verifica o RA
-      for x in range(0,10):
-        if(cX >= RAx[x][0] and cX <= RAx[x][1]):
-          for j in range(0,4):
-            if(cY >= RAy[j][0] and cY <= RAy[j][1]):
-              RA += str(x)
-              cv2.circle(imReg, (cX, cY), 3, (255, 255, 255), -15)
-              cv2.putText(imReg, str(x), (cX - 25, cY),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
-              controladorRA = True
-              cv2.drawContours(imReg, c, -1, (0,255,0), 3)
+      if(cX>=360 or cY>=243):
+          for x in range(0, 15):
+              if (cX >= ListX[x][0] and cX <= ListX[x][1]):
+                  for j in range(0, 30):
+                      if (cY >= ListY[j][0] and cY <= ListY[j][1]):
+                          cv2.circle(imReg, (cX, cY), 0, (255, 255, 255), -15)
+                          if (x==0 or x==5 or x==10):
+                              letra = "A"
+                          elif (x==1 or x==6 or x==11):
+                              letra = "B"
+                          elif (x==2 or x==7 or x==12):
+                              letra = "C"
+                          elif (x==3 or x==8 or x==13):
+                              letra = "D"
+                          elif (x==4 or x==9 or x==14):
+                              letra = "E"  
 
-      #Verifica as questões
-      if (controladorRA == False):
-        for x in range(0, 15):
-          if (cX >= ListX[x][0] and cX <= ListX[x][1]):
-            for j in range(0, 30):
-              if (cY >= ListY[j][0] and cY <= ListY[j][1]):
-                cv2.circle(imReg, (cX, cY), 0, (255, 255, 255), -15)
-                if (x==0 or x==5 or x==10):
-                  letra = "A"
-                elif (x==1 or x==6 or x==11):
-                  letra = "B"
-                elif (x==2 or x==7 or x==12):
-                  letra = "C"
-                elif (x==3 or x==8 or x==13):
-                  letra = "D"
-                elif (x==4 or x==9 or x==14):
-                  letra = "E"  
+                          if (cX >= ListX[0][0] and cX <= ListX[4][1]):
+                              numero = str(j+1)
+                          elif (cX >= ListX[5][0] and cX <= ListX[9][1]):
+                              numero = str(j + 21)
+                          elif (cX >= ListX[10][0] and cX <= ListX[14][1]):
+                              numero = str(j + 21)            
 
-                if (cX >= ListX[0][0] and cX <= ListX[4][1]):
-                  numero = str(j+1)
-                elif (cX >= ListX[5][0] and cX <= ListX[9][1]):
-                  numero = str(j + 21)
-                elif (cX >= ListX[10][0] and cX <= ListX[14][1]):
-                  numero = str(j + 21)            
-
-                listRet.append(letra)
-                listNumbers.append(numero)
-                cv2.putText(imReg, numero+' '+letra, (cX - 25, cY),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
-                cv2.drawContours(imReg, c, -1, (0,255,0), 3)
-
- 
+                          listRet.append(letra)
+                          listNumbers.append(numero)
+                          cv2.putText(imReg, numero+' '+letra, (cX - 25, cY),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
+                          
+      else:
+          for x in range(0,10):
+              if(cX >= RAx[x][0] and cX <= RAx[x][1]):
+                  for j in range(0,4):
+                      if(cY >= RAy[j][0] and cY <= RAy[j][1]):
+                          listRA.append(str(x))
+                          cv2.circle(imReg, (cX, cY), 3, (255, 255, 255), -15)
+  listRA.reverse()   
+                    
   #Ordena as listas que contem os numeros e as letras
   for x in range(0,len(listNumbers)-1):
-    for j in range(x,len(listNumbers)):
-      if (int(listNumbers[x]) >= int(listNumbers[j])):
+    for j in range(0,len(listNumbers)):
+      if (int(listNumbers[x]) <= int(listNumbers[j])):
         aux = listNumbers[x]
         listNumbers[x] = listNumbers[j]
         listNumbers[j] = aux
@@ -158,7 +143,6 @@ def getAnswer(contours, imReg):
         listRet[j] = aux
 
 
-  #Insere os - nas questões deixadas em branco
   ctd = 1
   for x in range(0,len(listNumbers)):
     if (listNumbers[x]!=listNumbers[x-1]):
@@ -167,27 +151,20 @@ def getAnswer(contours, imReg):
         listRet.insert(x,"-")
       ctd += 1
 
-
+    
   #Cria a listOrder, que é a lista já ordenada com o numero das questões e as letras juntas
   listOrder = []
   x = 0
-  while x < len(listNumbers):
+  while x < len(listNumbers)-1:
     ctd = x
     aux = []
     while (int(listNumbers[ctd]) == int(listNumbers[x])):
       aux.append(listRet[ctd])
       ctd += 1
-      if (ctd == len(listNumbers)):
-        break
     x = ctd
     listOrder.append(aux)
 
-  #Cria uma string com o RA do aluno
-  RA[::-1]
-  if (len(RA)!= 4):
-    RA = "Não identificado"
-
-  return listOrder, RA
+  return [listOrder,listRA]
 
 #Função que compara a lista que contem as questões assinaladas pelo aluno
 #com a lista que contem o gabarito, retornando uma lista com as questões certas e 
@@ -205,23 +182,26 @@ def compareTemplate(test, template):
 
 
 #Função main principal
-def iniciar():
-  #Limpa a caixa de texto
-  caixaTexto.delete(1.0,tk.END)
-  global stop_threads
-
-  #Desabilita o botao Iniciar
-  btIniciar['state'] = 'disable'
-
-  # Read reference image
-  #Para evitar que o usuário edite as imagens essencias do programa, elas foram transformadas em npy
-  imReference = np.load("base.npy")
-  imReference2 = np.load("baseCortado.npy")
-
+if __name__ == '__main__':
   
-  try:
-    # Utiliza a imagem que o usuário selecionou.
-    im = cv2.imread(gabaritoPath, cv2.IMREAD_COLOR)
+  # Read reference image
+  refFilename = "baseGabaritoNovo.jpeg"
+  print("Reading reference image : ", refFilename)
+  imReference = cv2.imread(refFilename, cv2.IMREAD_COLOR)
+
+  refFilename = "baseGabaritoNovoCortado.jpeg"
+  print("Reading reference image : ", refFilename)
+  imReference2 = cv2.imread(refFilename, cv2.IMREAD_COLOR)
+  
+  if (True):
+    # Solicita para o usuario uma imagem que será usada como gabarito
+    #na comparação das provas.
+    #imFilename = input("Digite o nome da imagem que será usada como gabarito. Não se esqueça da extensão do mesmo: ")
+
+    #Verifica se o arquivo informado existe. Caso não existir avisa o usuario e encerra o programa.
+    #fh = open(imFilename, 'r')
+    #print("Reading image to be the template : ", imFilename);  
+    im = cv2.imread("gabaritoNovo.jpeg", cv2.IMREAD_COLOR)
     
     #Alinha a imagem do gabarito com a imagem base
     imReg, h = alignImages(im, imReference)
@@ -233,10 +213,8 @@ def iniciar():
     ret, threshold = cv2.threshold(gray,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
     contours,_ = cv2.findContours(threshold,cv2.RETR_LIST,cv2.CHAIN_APPROX_NONE)
 
-    
-
     #Envia os contornos do gabarito e recebe uma lista com as letras assinaladas pelo aluno
-    template, _ = getAnswer(contours, imReg)
+    template = getAnswer(contours, imReg)[0]
 
     #########################################################################################################################
 
@@ -252,50 +230,41 @@ def iniciar():
     row = 0
     col = 0
 
-    ctd = 1
+    bar = progressbar.ProgressBar(maxval=len(files), \
+    widgets=[progressbar.Bar('#', '[', ']'), ' ', progressbar.Percentage()])
+    bar.start()
+
+    ctd = 0
     #Varre todos os arquivos encontrados na pasta ProvasParaCorrigir
     for f in files:
-      #Caso o botão de fechar seja precionado e a thread estiver em execusão, esse if finaliza a mesma
-      if stop_threads:
-        stop_threads = False
-        return 
-      try:
+      if(True):
         #Verifica se o arquivo realmente existe, e caso não seja uma imagem
         #informa o erro ao usuario e continua corrigindo as demais provas
-        #fh = open("ProvasParaCorrigir/"+f, 'r')
-        im = cv2.imread("ProvasParaCorrigir/"+f, cv2.IMREAD_COLOR)       
+        fh = open("ProvasParaCorrigir/"+f, 'r')
+        im = cv2.imread("ProvasParaCorrigir/"+f, cv2.IMREAD_COLOR)
 
         #Lê a prova
         imReg, h = alignImages(im, imReference)
         imReg, h = alignImages(imReg, imReference2)
-
         #Aplica o blur para remover os ruidos e encontra os contornos da prova
-        blurred = cv2.pyrMeanShiftFiltering(imReg,10,100)
+        blurred = cv2.pyrMeanShiftFiltering(imReg,5,100)
         gray = cv2.cvtColor(blurred,cv2.COLOR_BGR2GRAY)
-        threshold = cv2.adaptiveThreshold(gray,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,cv2.THRESH_BINARY,15,8)
+        ret, threshold = cv2.threshold(gray,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
         contours,_ = cv2.findContours(threshold,cv2.RETR_LIST,cv2.CHAIN_APPROX_NONE)
 
-
         #Retorna a lista com as letras assinaladas pelo aluno da prova
-        prova, RA = getAnswer(contours, imReg)
+        prova = getAnswer(contours, imReg)[0]
 
         #Verifica quais questões o aluno acertou e quais ele errou se baseando no gabarito informado
         #pelo usuario
         correctAnswers, wrongAnswer = compareTemplate(prova,template)
 
-        #Verifica grandes erros de alinhamentos. Se o mesmo houver força uma exceção
-        if (len(correctAnswers)+len(wrongAnswer) < 50):
-          raise ValueError()
-
         #Transfere a imagem da pasta ProvasParaCorrigir para a pasta ProvasCorrigidas
-        #os.rename("./ProvasParaCorrigir/"+f, "./ProvasCorrigidas/"+f)
-        dirpath = os.getcwd()
-        # print(dirpath)
-        shutil.move(dirpath + "/ProvasParaCorrigir/"+f, dirpath+"/ProvasCorrigidas/"+f)
+        #os.rename("/home/pedro/Documentos/GitHub/RasProject1/ProvasParaCorrigir/"+f, "/home/pedro/Documentos/GitHub/RasProject1/ProvasCorrigidas/"+f)
 
         #Cria outra imagem referente a prova que foi corrigida porem com as letras e numeros em cima
         #das bolinhas que o aluno assinalou caso precise verificar algum possivel erro no programa
-        cv2.imwrite("ProvasCorrigidas/Resolucao/"+RA+"-"+f, imReg)
+        cv2.imwrite("ProvasCorrigidas/Corrigido"+f, imReg)
         
         #Escreve o nome da imagem, a quantidade de questões que o aluno acertou, a quantidade de questões que o aluno errou,
         #as questões acertadas e erradas no arquivo Excel
@@ -303,6 +272,7 @@ def iniciar():
         cell_format1.set_font_color('red')
         cell_format1.set_font_size(15)
         worksheet.write(row, col, f, cell_format1)
+        worksheet.write(row,col, "Número de Inscrição: " + getAnswer(contours, imReg)[1][0] +getAnswer(contours, imReg)[1][1] + getAnswer(contours, imReg)[1][2] +getAnswer(contours, imReg)[1][3] )
         row += 1
         col = 1
         worksheet.write(row, col, "Corretas:")
@@ -326,168 +296,14 @@ def iniciar():
 
         col = 0
         row += 2  
-
-        #Atualiza os valores da ProgressBar
-        caixaTexto.insert(tk.INSERT,'Corrigido '+f+"\n")
-        caixaTexto.see(tk.END)
-        progressBar['value'] = (ctd*100)/len(files)
-        janela.update_idletasks()
-      except:
-        try:
-          caixaTexto.insert(tk.INSERT,'Erro ao abrir ou alinhar o arquivo '+f+". Verifique a extensão e a qualidade"
-          "da imagem\n",'error')
-          progressBar['value'] = (ctd*100)/len(files)
-          janela.update_idletasks()
-        except:
-          pass
+        
+        bar.update(ctd+1)
+      #except:
+        #bar.update(ctd+1)
+        #print(colored("\nErro ao carregar o arquivo " + f + '\n','red'))
       ctd+=1 
     workbook.close()
-    if stop_threads:
-        stop_threads = False
-        return 
-    caixaTexto.insert(tk.INSERT,'Todas as provas foram corrigidas!\n','done')
-    btParar['state'] = 'disable'
+    bar.finish()
     
-  except:
-    caixaTexto.insert(tk.INSERT,'Não foi possível carregar o gabarito selecionado! Verifique a extensão '
-    'e integridade do arquivo!\n','error')
-  btIniciar['state'] = 'normal'
-
-
-
-##############################################################################################################################
-#########     A PARTIR DAQUI COMEÇA AS FUNÇÕES E CÓDIGOS RELACIONADOS A PARTE VISUAL               ###########################
-##############################################################################################################################
-
-
-#Função para o usuario selecionar o arquivo que será usado como gabarito
-#Após selecionado, a função irá atribuir o caminho a variável global gabaritoPath para ser usado no Iniciar()
-#Apenas depois de um arquivo ser selecionado que é liberado o botao Iniciar
-def getGabaritoPath ():
-  janela.filename =  filedialog.askopenfilename(initialdir = os.path.dirname(__file__),title = "Select file",filetypes = 
-      (("jpeg files","*.jpg"),("all files","*.*")))
-
-  global gabaritoPath 
-  global nomeGabarito
-  nomeGabarito = []
-  gabaritoPath = str(janela.filename)
-  btIniciar['state'] = 'normal'
-  i = len(gabaritoPath)-1
-  while (gabaritoPath[i] != '\'' and gabaritoPath[i] != '/'):
-    nomeGabarito.append(gabaritoPath[i])
-    i -= 1
-  nomeGabarito = nomeGabarito[::-1]
-  lblGabarito['text'] = 'Gabarito selecionado:\n'+''.join(nomeGabarito)
-
-
-#Esta função torna a variável global pause como verdadeira ou false. Dependendo do valor dela
-#a função Iniciar() fica em um loop infinito, impossibilitando que a correção continue. A função
-#também muda o nome do botão.
-def pausar ():
-  global stop_threads
-  stop_threads = True
-  btParar['state'] = 'disable'
-  btIniciar['state'] = 'normal'
-  caixaTexto.insert(tk.INSERT,'Correção cancelada!\n','done')
-
-#Função que informa ao usuário como utilizar o programa ao apertar o botão "Ajuda"
-def ajuda ():
-  caixaTexto.delete(1.0,tk.END)
-  caixaTexto.insert(tk.INSERT,'Ao iniciar o programa pela primeira vez será criado duas pastas, a "ProvasParaCorrigir" e '
-                    '"ProvasCorrigidas". Dentro da pasta ProvasParaCorrigir você deverá inserir todas as fotos das provas '
-                    'que você deseja corrigir. Vale ressaltar que embora o programa funcione com fotos tiradas pelo celular, '
-                    'dependendo de como a mesma seja tirada, da iluminação, angulação e qualidade da foto, o programa '
-                    'pode ter erros na hora da correção. Escanear as provas é a forma mais segura de fazer a correção!\n'
-                    'Após abrir a janela principal, aperte o botão "Selecionar Gabarito" para selecionar a imagem que será '
-                    'utilizada como base para a correção das demais. Os mesmos princípios em relação a qualidade da imagem '
-                    'citados a cima valem para esta foto.\n'
-                    'Com o gabarito selecionado basta apertar no botão "Iniciar" para começar a correção! Eventuais erros serão '
-                    'informados nesta caixa de texto.\n'
-                    'Ao finalizar a correção, será criado na pasta "ProvasCorrigidas" uma foto de cada prova corrigida e como '
-                    'o programa as corrigiu de forma a facilitar identificação de erros de correção. Também será criado um arquivo '
-                    'Excel com os resultados de cada prova!\n')
-  caixaTexto.insert(tk.INSERT,'APROVEITE!! =)','done')
-
-#Função que informa ao usuário algumas informações básicas do programa
-def sobre ():
-  caixaTexto.delete(1.0,tk.END)
-  caixaTexto.insert(tk.INSERT,'Este programa foi criado sem fins comerciais com a finalidade de colaborar com a correção das '
-                    'provas do cursinho Principia da Unesp Bauru.\n\n')
-  caixaTexto.insert(tk.INSERT,'Criado pela equipe Beta do Projetos RAS - IEEE - Unesp Bauru:\n Pedro Caldato\n Leonardo Moreno\n Bruno Yudy\n \n'
-                    'Com a supervisão de:\n Vitor Vecina\n','done')
-
-
-#Inicia a thread quando o usuário aperta o botão "Iniciar"
-def iniciandoThread():
-  #Declara a thread que será usado na função Iniciar()
-  t = threading.Thread(target=iniciar,)
-  btParar['state'] = 'normal'
-  thread = threading.Thread(target=iniciar,)
-  thread.start()
-
-#Função que pergunta ao usuário se ele realmente quer fechar o programa quando o botão fechar é pressionado 
-def on_closing():
-  global stop_threads
-  if messagebox.askokcancel("Sair", "Realmente deseja sair?"):    
-    stop_threads = True
-    janela.destroy()
-
-
-
-#definindo a janela principal
-janela.geometry("675x600")
-janela["bg"]= "gray"
-janela.title("Corretor de gabarito")
-janela.resizable(0,0)
-
-#verifica se as pastas ProvasParaCorrigir e ProvasCorrigidas existem,
-#Caso contrário o programa as cria e informa ao usuario oq deve ser feito
-if (not os.path.isdir('./ProvasParaCorrigir')):
-  os.mkdir("./ProvasParaCorrigir")
-  messagebox.showwarning('Alerta!', 'A pasta ProvasParaCorrigir não existia e por isso foi criada!\n'
-    'Coloque as fotos dos gabaritos dentro dela!')
-if (not os.path.isdir('./ProvasCorrigidas')):
-  os.mkdir("./ProvasCorrigidas")
-  os.mkdir("./ProvasCorrigidas/Resolucao")
-if (not os.path.isdir('./ProvasCorrigidas/Resolucao')):
-  os.mkdir("./ProvasCorrigidas/Resolucao")
-
-
-#Definindo os botões, caixas de texto, menu bar, progress bar, labels, etc.
-btGabarito=Button(janela, width=15, height=4, text="Selecinar\n Gabarito", command=getGabaritoPath,)
-btGabarito.place(x=50, y=50)
-
-lblGabarito = Label(janela, text="Gabarito selecionado:", font=("Arial Bold", 10),bg='gray')
-lblGabarito.place(x=250, y=150)
-
-btIniciar=Button(janela, width=15, height=4, text="Iniciar", command=iniciandoThread, state='disable')
-btIniciar.place(x=250, y=50)
-
-btParar=Button(janela, width=15, height=4, text="Cancelar", command=pausar, state='disable')
-btParar.place(x=450, y=50)
-
-progressBar = Progressbar(janela, length=547)
-progressBar.place(x=50, y= 200)
-
-caixaTexto = scrolledtext.ScrolledText(janela,width=66,height=10)
-caixaTexto.place(x=50, y= 250)
-caixaTexto.tag_config('error', foreground='red')
-caixaTexto.tag_config('done', foreground='green')
-
-menu = Menu(janela)
-menu.add_command(label='Ajuda', command=ajuda)
-menu.add_command(label='Sobre', command=sobre)
-janela.config(menu=menu)
-
-try:
-  canvas = Canvas(janela, width = 365, height = 138)      
-  canvas.pack()      
-  img = PhotoImage(file="principia.png")     
-  canvas.create_image(0,0, anchor=tk.NW, image=img)      
-  canvas.place(x=140,y=440)
-except:
-  pass
-
-#Verifica se o botão de fechar foi abertado. Chama a função on_closing em caso positivo
-janela.protocol("WM_DELETE_WINDOW", on_closing)
-janela.mainloop()
+  #except:
+    #print("O arquivo fornecido não foi encontrado. Verifique se o mesmo existe e se está na extensão correta!")
