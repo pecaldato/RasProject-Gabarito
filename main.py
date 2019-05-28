@@ -17,6 +17,7 @@ import threading
 import shutil
 
 #Declarando algumas variáveis globais
+#5000 0,05
 MAX_MATCHES = 5000
 GOOD_MATCH_PERCENT = 0.05
 gabaritoPath = ""
@@ -51,7 +52,7 @@ def alignImages(im1, im2):
 
   # Draw top matches
   # imMatches = cv2.drawMatches(im1, keypoints1, im2, keypoints2, matches, None)
-  # cv2.imwrite("matches.jpg", imMatches)
+  # cv2.imwrite("matches.jpeg", imMatches)
   
   # Extract location of good matches
   points1 = np.zeros((len(matches), 2), dtype=np.float32)
@@ -88,6 +89,7 @@ def getAnswer(contours, imReg):
   listRet = []
   listNumbers = []
   RA = ''
+  listRA = []
 
 
   #Take the central pixel of the contours and compare to the lists
@@ -102,47 +104,41 @@ def getAnswer(contours, imReg):
       cY = int(M["m01"] / M["m00"])
 
       #Compare the central point to the Xo value of every letter and question number
-      controladorRA = False
-      #verifica o RA
-      for x in range(0,10):
-        if(cX >= RAx[x][0] and cX <= RAx[x][1]):
-          for j in range(0,4):
-            if(cY >= RAy[j][0] and cY <= RAy[j][1]):
-              RA += str(x)
-              cv2.circle(imReg, (cX, cY), 3, (255, 255, 255), -15)
-              cv2.putText(imReg, str(x), (cX - 25, cY),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
-              controladorRA = True
-              cv2.drawContours(imReg, c, -1, (0,255,0), 3)
+      if(cX>=360 or cY>=243):
+          for x in range(0, 15):
+              if (cX >= ListX[x][0] and cX <= ListX[x][1]):
+                  for j in range(0, 30):
+                      if (cY >= ListY[j][0] and cY <= ListY[j][1]):
+                          cv2.circle(imReg, (cX, cY), 0, (255, 255, 255), -15)
+                          if (x==0 or x==5 or x==10):
+                              letra = "A"
+                          elif (x==1 or x==6 or x==11):
+                              letra = "B"
+                          elif (x==2 or x==7 or x==12):
+                              letra = "C"
+                          elif (x==3 or x==8 or x==13):
+                              letra = "D"
+                          elif (x==4 or x==9 or x==14):
+                              letra = "E"  
 
-      #Verifica as questões
-      if (controladorRA == False):
-        for x in range(0, 15):
-          if (cX >= ListX[x][0] and cX <= ListX[x][1]):
-            for j in range(0, 30):
-              if (cY >= ListY[j][0] and cY <= ListY[j][1]):
-                cv2.circle(imReg, (cX, cY), 0, (255, 255, 255), -15)
-                if (x==0 or x==5 or x==10):
-                  letra = "A"
-                elif (x==1 or x==6 or x==11):
-                  letra = "B"
-                elif (x==2 or x==7 or x==12):
-                  letra = "C"
-                elif (x==3 or x==8 or x==13):
-                  letra = "D"
-                elif (x==4 or x==9 or x==14):
-                  letra = "E"  
+                          if (cX >= ListX[0][0] and cX <= ListX[4][1]):
+                              numero = str(j+1)
+                          elif (cX >= ListX[5][0] and cX <= ListX[9][1]):
+                              numero = str(j + 21)
+                          elif (cX >= ListX[10][0] and cX <= ListX[14][1]):
+                              numero = str(j + 21)            
 
-                if (cX >= ListX[0][0] and cX <= ListX[4][1]):
-                  numero = str(j+1)
-                elif (cX >= ListX[5][0] and cX <= ListX[9][1]):
-                  numero = str(j + 21)
-                elif (cX >= ListX[10][0] and cX <= ListX[14][1]):
-                  numero = str(j + 21)            
-
-                listRet.append(letra)
-                listNumbers.append(numero)
-                cv2.putText(imReg, numero+' '+letra, (cX - 25, cY),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
-                cv2.drawContours(imReg, c, -1, (0,255,0), 3)
+                          listRet.append(letra)
+                          listNumbers.append(numero)
+                          cv2.putText(imReg, numero+' '+letra, (cX - 25, cY),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+                          
+      else:
+          for x in range(0,10):
+              if(cX >= RAx[x][0] and cX <= RAx[x][1]):
+                  for j in range(0,4):
+                      if(cY >= RAy[j][0] and cY <= RAy[j][1]):
+                          listRA.append(str(x))
+                          cv2.putText(imReg, str(x), (cX - 25, cY),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
  
   #Ordena as listas que contem os numeros e as letras
@@ -183,9 +179,12 @@ def getAnswer(contours, imReg):
     listOrder.append(aux)
 
   #Cria uma string com o RA do aluno
-  RA[::-1]
-  if (len(RA)!= 4):
+  listRA.reverse()
+  if (len(listRA)!= 4):
     RA = "Não identificado"
+  else:
+      RA = ''.join(listRA)
+  
 
   return listOrder, RA
 
@@ -222,6 +221,13 @@ def iniciar():
   try:
     # Utiliza a imagem que o usuário selecionou.
     im = cv2.imread(gabaritoPath, cv2.IMREAD_COLOR)
+  
+    #Redimenciona a imagem para ficar no tamanho adequado
+    altura_imagem, largura_imagem = im.shape[:2]
+    largura_desejada = 720
+    percentual_largura = float(largura_desejada) / float(largura_imagem)
+    altura_desejada = int((altura_imagem * percentual_largura))
+    im = cv2.resize(im,(largura_desejada, altura_desejada), interpolation = cv2.INTER_CUBIC)
     
     #Alinha a imagem do gabarito com a imagem base
     imReg, h = alignImages(im, imReference)
@@ -232,8 +238,6 @@ def iniciar():
     gray = cv2.cvtColor(blurred,cv2.COLOR_BGR2GRAY)
     ret, threshold = cv2.threshold(gray,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
     contours,_ = cv2.findContours(threshold,cv2.RETR_LIST,cv2.CHAIN_APPROX_NONE)
-
-    
 
     #Envia os contornos do gabarito e recebe uma lista com as letras assinaladas pelo aluno
     template, _ = getAnswer(contours, imReg)
@@ -263,7 +267,14 @@ def iniciar():
         #Verifica se o arquivo realmente existe, e caso não seja uma imagem
         #informa o erro ao usuario e continua corrigindo as demais provas
         #fh = open("ProvasParaCorrigir/"+f, 'r')
-        im = cv2.imread("ProvasParaCorrigir/"+f, cv2.IMREAD_COLOR)       
+        im = cv2.imread("ProvasParaCorrigir/"+f, cv2.IMREAD_COLOR)    
+
+        #Redimenciona a imagem para ficar no tamanho adequado
+        altura_imagem, largura_imagem = im.shape[:2]
+        largura_desejada = 720
+        percentual_largura = float(largura_desejada) / float(largura_imagem)
+        altura_desejada = int((altura_imagem * percentual_largura))
+        im = cv2.resize(im,(largura_desejada, altura_desejada), interpolation = cv2.INTER_CUBIC)
 
         #Lê a prova
         imReg, h = alignImages(im, imReference)
@@ -289,9 +300,8 @@ def iniciar():
 
         #Transfere a imagem da pasta ProvasParaCorrigir para a pasta ProvasCorrigidas
         #os.rename("./ProvasParaCorrigir/"+f, "./ProvasCorrigidas/"+f)
-        dirpath = os.getcwd()
-        # print(dirpath)
-        shutil.move(dirpath + "/ProvasParaCorrigir/"+f, dirpath+"/ProvasCorrigidas/"+f)
+        #dirpath = os.getcwd()
+        shutil.move("./ProvasParaCorrigir/"+f, "./ProvasCorrigidas/"+f)
 
         #Cria outra imagem referente a prova que foi corrigida porem com as letras e numeros em cima
         #das bolinhas que o aluno assinalou caso precise verificar algum possivel erro no programa
@@ -302,7 +312,8 @@ def iniciar():
         cell_format1 = workbook.add_format()
         cell_format1.set_font_color('red')
         cell_format1.set_font_size(15)
-        worksheet.write(row, col, f, cell_format1)
+        #Adiciona o numero do RA no Excel
+        worksheet.write(row, col, RA+" "+f, cell_format1)
         row += 1
         col = 1
         worksheet.write(row, col, "Corretas:")
