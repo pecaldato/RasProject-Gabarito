@@ -9,11 +9,14 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Pré-requisito
 
-Para executar o programa corretor de gabaritos basta ter o sistema Windows e um descompactador de arquivos, como o WinRar instalado em sua máquina.
+Para executar o programa corretor de gabaritos basta ter o sistema Windows e um descompactador de arquivos, como o WinRar instalado em sua máquina, e as bibliotecas caso rode o programa pelo Python.
 
 ```
 -Sistema Operacional: Windows 7, Windowns 8 ou Windows 10 - 32/64bits
 -Descompactador de arquivos: WinRar
+-Bibliotecas: numpy
+              opencv-python
+              xlsxwriter
 
 ```
 
@@ -21,13 +24,27 @@ Para executar o programa corretor de gabaritos basta ter o sistema Windows e um 
 
 A instalação do programa corretor de gabaritos é bem simples, basta seguir os passos a seguir:
 
+Executável:
+```
+1º Baixe a pasta que contem os arquivos em https://mega.nz/#F!aWZA0CKK!117qYt641MSt_CWW-J8aFA
+
+2º Abra a pasta com os arquivos e execute o programa "main.exe".
+
+3° Pronto! O programa corretor de gabaritos está pronto para ser utilizado.
+```
+
+Arquivo Python (rodar pelo terminal):
+```
 1° Após conferir a instalação do programa descompactador de arquivos em sua máquina é necessário baixar os arquivos do programa corretor de gabaritos clicando em "Clone or Download" na pasta do git e selecionando a opção "Download Zip".
 
 2° Feito o download do arquivo zip, descompacte-o com seu descompactador de arquivos para o local desejado.
 
-3° Abra a pasta com os arquivos descompactados e execute o arquivo "main.exe".
+3° Abra o terminal e vá para o diretório da pasta do programa.
 
-4° Pronto! O programa corretor de gabaritos está pronto para ser utilizado.
+4º Execute o comando "python main.py".
+
+5° Pronto! O programa corretor de gabaritos está pronto para ser utilizado.
+```
 
 ### Como utilizar?
 
@@ -39,7 +56,7 @@ Feito isso, siga os passos a seguir:
 
 2° Uma vez impressa todas as cópias necessárias para aplicação da prova, é necessário que se preencha uma das cópias com as respostas corretas das questões. Essa folha será lida posteriosmente no programa corretor de gabaritos como o modelo de respostas esperadas pelos alunos.
 
-3° Feito o preenchimento das respostas corretas em uma das folhas, é necessário que se tire uma foto ou que esta folha "oficial" seja escaneada.
+3° Feito o preenchimento das respostas corretas em uma das folhas, é necessário que se tire uma foto ou que esta folha "oficial" seja escaneada. Vale ressaltar que as provas escaneadas garantem mais precisão nos resultados. 
 
 4° Após isso, abra o programa corretor de gabaritos.
 
@@ -52,47 +69,19 @@ Feito isso, siga os passos a seguir:
 
 7° Quando as provas dos alunos estiverem dentro da pasta "ProvasParaCorrigir", clique sobre o botão "Iniciar". Após isso, o programa irá começar o processo de correção das provas.
 
-8° Quando o programa acabar de corrigir todas as provas, uma planilha excel com o nome "Resultados" irá ser criada na pasta raiz do programa, indicando o número de inscrição do aluno, quantos e quais foram os acertos.
+8° Quando o programa acabar de corrigir todas as provas, uma planilha excel com o nome "Resultados" irá ser criada na pasta raiz do programa, indicando o número de inscrição do aluno, quantos e quais foram os acertos. As imagens das provas corrigidas também serão enviadas para a pasta ProvasCorrigidas, dessa forma as imagens que possam ter tido grandes erros na correção permanecerá na pasta ProvasParaCorrigir. Dentro da pasta ProvasCorrigidas também será criada uma pasta chamada Resolucao. Nela será criada uma imagem para cada prova corrigida e como o programa as corrigiu afim de facilitar a revisão de determinada prova.
 
-## Running the tests
+## Rodar testes prontos
 
-Explain how to run the automated tests for this system
+Afim de testar o programa, existe uma pasta chamada "Backup de Fotos" dentro da pasta raiz que contem várias imagens de provas em diferentes angulações e métodos de captura. Também há uma imagem chamada gabaritoNovo.jpeg na pasta raiz.
+Para executar os testes basta rodar o programa da forma mais conveniente (ver tópico Instalação e Como Utilizar), copiar as imagens da pasta "Backup de Fotos" para a pasta "ProvasParaCorrigir" e, na hora de selecionar o gabarito-base, ou seja o gabarito que contenha as respostas corretas, utilizar a imagem gabaritoNovo.jpeg. Ademais, seguir instruções dos tópicos anteriores.
 
-### Break down into end to end tests
+## Feito com
 
-Explain what these tests test and why
+* [Python 3.7](https://www.python.org/) - Linguagem usada
+* [Opencv](https://opencv.org/) - Visão Computacional
 
-```
-Give an example
-```
-
-### And coding style tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-## Deployment
-
-Add additional notes about how to deploy this on a live system
-
-## Built With
-
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
-
-## Contributing
-
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
-
-## Versioning
-
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
-
-## Authors
+## Autores
 
 * **Billie Thompson** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
 
@@ -101,9 +90,3 @@ See also the list of [contributors](https://github.com/your/project/contributors
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
-
-## Acknowledgments
-
-* Hat tip to anyone whose code was used
-* Inspiration
-* etc
