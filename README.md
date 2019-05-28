@@ -3,9 +3,9 @@
 Este programa tem a finalidade de corrigir automaticamente as provas, sem a necessidade do trabalho mecânico humano. Para isso, basta tirar uma foto da prova do aluno com qualquer dispositivo e disponibilizar na pasta correspondente. Também é possível utilizar um scanner para tal fim. Para que o programa execute sua função normalmente é necessário que se utilize o modelo de gabarito disponibilizado na pasta raiz do git hub.
 Tal programa foi desenvolvido pelo grupo Beta do Projetos Ras - IEEE - Unesp Bauru, sem fins lucrativos e com o objetivo de auxiliar o cursinho Princípia (Cursinho da Unesp Bauru).
 
-## Getting Started
+## Começando
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+Essas instruçoes te dará uma copia deste projeto para rodar em seu computador para uso pessoal e não comercial.
 
 ### Pré-requisito
 
@@ -83,10 +83,12 @@ Para executar os testes basta rodar o programa da forma mais conveniente (ver t�
 
 ## Autores
 
-* **Billie Thompson** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
+* **Pedro Caldato** - [pecaldato](https://github.com/pecaldato)
+* **Leonardo Moreno** - [leopmoreno](https://github.com/leopmoreno)
+* **Bruno Yudy** - [brunoyudy](https://github.com/brunoyudy)
 
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
+* **Ras - IEEE** -[Unesp Bauru](https://www.bauru.unesp.br/)
 
-## License
+## Licença
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+Este projeto é gratuito e sem fins comerciais! A comercialização do mesmo proibida!!
