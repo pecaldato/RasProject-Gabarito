@@ -71,7 +71,7 @@ Feito isso, siga os passos a seguir:
 
 8° Quando o programa acabar de corrigir todas as provas, uma planilha excel com o nome "Resultados" irá ser criada na pasta raiz do programa, indicando o número de inscrição do aluno, quantos e quais foram os acertos. As imagens das provas corrigidas também serão enviadas para a pasta ProvasCorrigidas, dessa forma as imagens que possam ter tido grandes erros na correção permanecerá na pasta ProvasParaCorrigir. Dentro da pasta ProvasCorrigidas também será criada uma pasta chamada Resolucao. Nela será criada uma imagem para cada prova corrigida e como o programa as corrigiu afim de facilitar a revisão de determinada prova.
 
-## Rodar testes prontos
+## Rodando testes prontos
 
 Afim de testar o programa, existe uma pasta chamada "Backup de Fotos" dentro da pasta raiz que contem várias imagens de provas em diferentes angulações e métodos de captura. Também há uma imagem chamada gabaritoNovo.jpeg na pasta raiz.
 Para executar os testes basta rodar o programa da forma mais conveniente (ver tópico Instalação e Como Utilizar), copiar as imagens da pasta "Backup de Fotos" para a pasta "ProvasParaCorrigir" e, na hora de selecionar o gabarito-base, ou seja o gabarito que contenha as respostas corretas, utilizar a imagem gabaritoNovo.jpeg. Ademais, seguir instruções dos tópicos anteriores.
