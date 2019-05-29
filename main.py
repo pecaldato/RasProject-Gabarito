@@ -253,9 +253,28 @@ def iniciar():
     #Cria o arquivo do Excel
     workbook = xlsxwriter.Workbook('Resultados.xlsx')
     worksheet = workbook.add_worksheet()
-    row = 0
-    col = 0
 
+    cell_format_wrong = workbook.add_format()
+    cell_format_wrong.set_font_color('red')
+    cell_format_wrong.set_align('center')
+    # cell_format_wrong.set_font_size(15)
+    cell_format_right = workbook.add_format()
+    cell_format_right.set_font_color('green')
+    cell_format_right.set_align('center')
+
+    cell_format_infos = workbook.add_format()
+    cell_format_infos.set_bold()
+    cell_format_infos.set_align('center')
+
+    worksheet.write(0, 0, "RA")
+    worksheet.write(1, 0, "Acertos")
+    worksheet.write(2, 0, "Erros")
+    worksheet.write(3, 0, "Porcentagem")
+    worksheet.set_column(0, 0, len("Porcentagem "),cell_format_infos)
+    for x in range(0,50):
+      worksheet.write(x+4, 0, str(x+1))
+
+    col = 1
     ctd = 1
     #Varre todos os arquivos encontrados na pasta ProvasParaCorrigir
     for f in files:
@@ -266,7 +285,6 @@ def iniciar():
       try:
         #Verifica se o arquivo realmente existe, e caso não seja uma imagem
         #informa o erro ao usuario e continua corrigindo as demais provas
-        #fh = open("ProvasParaCorrigir/"+f, 'r')
         im = cv2.imread("ProvasParaCorrigir/"+f, cv2.IMREAD_COLOR)    
 
         #Redimenciona a imagem para ficar no tamanho adequado
@@ -299,44 +317,43 @@ def iniciar():
           raise ValueError()
 
         #Transfere a imagem da pasta ProvasParaCorrigir para a pasta ProvasCorrigidas
-        #os.rename("./ProvasParaCorrigir/"+f, "./ProvasCorrigidas/"+f)
-        #dirpath = os.getcwd()
         shutil.move("./ProvasParaCorrigir/"+f, "./ProvasCorrigidas/"+f)
 
         #Cria outra imagem referente a prova que foi corrigida porem com as letras e numeros em cima
         #das bolinhas que o aluno assinalou caso precise verificar algum possivel erro no programa
         cv2.imwrite("ProvasCorrigidas/Resolucao/"+RA+"-"+f, imReg)
         
+      
+        #Adiciona o numero do RA no Excel
+        worksheet.write(0, col, RA, cell_format_infos)
         #Escreve o nome da imagem, a quantidade de questões que o aluno acertou, a quantidade de questões que o aluno errou,
         #as questões acertadas e erradas no arquivo Excel
-        cell_format1 = workbook.add_format()
-        cell_format1.set_font_color('red')
-        cell_format1.set_font_size(15)
-        #Adiciona o numero do RA no Excel
-        worksheet.write(row, col, RA+" "+f, cell_format1)
-        row += 1
-        col = 1
-        worksheet.write(row, col, "Corretas:")
-        col += 1
-        worksheet.write(row, col, "Total: " + str(len(correctAnswers)))
-        col += 1
-        
-        for i in range(len(correctAnswers)):
-          worksheet.write(row, col, str(correctAnswers[i][0])+"-"+str(correctAnswers[i][1][0]))
-          col += 1
+        worksheet.write(1, col, str(len(correctAnswers)),cell_format_right)
+        worksheet.write(2, col, str(len(wrongAnswer)),cell_format_right)
+        worksheet.write(3, col, str(len(correctAnswers)*2)+"%",cell_format_right)
+        worksheet.set_column(col, col, 18,cell_format_right)
 
-        row += 1
-        col = 1
-        worksheet.write(row, col, "Incorretas:")
-        col += 1
-        worksheet.write(row, col, "Total: " + str(len(wrongAnswer)))
-        col += 1
-        for i in range(len(wrongAnswer)):
-          worksheet.write(row, col,str(wrongAnswer[i][0])+"-"+str(wrongAnswer[i][1]))
-          col += 1
+        row = 4
+        x = 1
+        correct = 0
+        wrong = 0
+        while (x <= 50):
+          if (correct < len(correctAnswers)):
+            if (int(correctAnswers[correct][0]) == x):
+              worksheet.write(row, col,str(correctAnswers[correct][1][0]), cell_format_right)
+              correct += 1
+          if (wrong < len(wrongAnswer)):
+            if (int(wrongAnswer[wrong][0]) == x):
+              erradas = ""
+              for j in range (0,len(wrongAnswer[wrong][1])):
+                erradas += str(wrongAnswer[wrong][1][j])+" "
+              worksheet.write(row, col, erradas, cell_format_wrong)
+              wrong += 1
 
-        col = 0
-        row += 2  
+          row += 1
+          x += 1
+
+        col += 1
 
         #Atualiza os valores da ProgressBar
         caixaTexto.insert(tk.INSERT,'Corrigido '+f+"\n")
