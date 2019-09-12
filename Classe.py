@@ -19,11 +19,6 @@ class Image:
     #Declaração das variáveis globais
     MAX_MATCHES = 5000
     GOOD_MATCH_PERCENT = 0.05
-    gabaritoPath = ""
-    janela = Tk()
-    caixaTexto = None
-    btParar = None
-    stop_threads = False
 
     # Função iniciadora da classe.
     def __init__(self, im1, im2):
@@ -72,185 +67,6 @@ class Image:
         im1Reg = cv2.warpPerspective(im1, h, (width, height))
         
         return im1Reg, h
-
-    #Função main principal
-    def iniciar():
-        #Limpa a caixa de texto
-        caixaTexto.delete(1.0,tk.END)
-        global stop_threads
-
-        #Desabilita o botao Iniciar
-        btIniciar['state'] = 'disable'
-
-        # Read reference image
-        #Para evitar que o usuário edite as imagens essencias do programa, elas foram transformadas em npy
-        imReference = np.load("base.npy")
-        imReference2 = np.load("baseCortado.npy")
-
-        
-        try:
-            # Utiliza a imagem que o usuário selecionou.
-            im = cv2.imread(gabaritoPath, cv2.IMREAD_COLOR)
-        
-            #Redimenciona a imagem para ficar no tamanho adequado
-            altura_imagem, largura_imagem = im.shape[:2]
-            largura_desejada = 1280
-            percentual_largura = float(largura_desejada) / float(largura_imagem)
-            altura_desejada = int((altura_imagem * percentual_largura))
-            im = cv2.resize(im,(largura_desejada, altura_desejada), interpolation = cv2.INTER_CUBIC)
-            
-            #Alinha a imagem do gabarito com a imagem base
-            imReg, h = alignImages(im, imReference)
-            imReg, h = alignImages(imReg, imReference2)
-
-            #Acha os contornos do gabarito
-            blurred = cv2.pyrMeanShiftFiltering(imReg,5,100)
-            gray = cv2.cvtColor(blurred,cv2.COLOR_BGR2GRAY)
-            ret, threshold = cv2.threshold(gray,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
-            contours,_ = cv2.findContours(threshold,cv2.RETR_LIST,cv2.CHAIN_APPROX_NONE)
-
-            #Envia os contornos do gabarito e recebe uma lista com as letras assinaladas pelo aluno
-            template, _ = getAnswer(contours, imReg)
-
-            #########################################################################################################################
-
-            #Pega todos os arquivos da pasta ProvasParaCorrigir
-            files = []
-            for (dirpath, dirnames, filenames) in walk("ProvasParaCorrigir"):
-            files.extend(filenames)
-
-
-            #Cria o arquivo do Excel
-            workbook = xlsxwriter.Workbook('Resultados.xlsx')
-            worksheet = workbook.add_worksheet()
-
-            cell_format_wrong = workbook.add_format()
-            cell_format_wrong.set_font_color('red')
-            cell_format_wrong.set_align('center')
-            # cell_format_wrong.set_font_size(15)
-            cell_format_right = workbook.add_format()
-            cell_format_right.set_font_color('green')
-            cell_format_right.set_align('center')
-
-            cell_format_infos = workbook.add_format()
-            cell_format_infos.set_bold()
-            cell_format_infos.set_align('center')
-
-            worksheet.write(0, 0, "RA")
-            worksheet.write(1, 0, "Acertos")
-            worksheet.write(2, 0, "Erros")
-            worksheet.write(3, 0, "Porcentagem")
-            worksheet.set_column(0, 0, len("Porcentagem "),cell_format_infos)
-            for x in range(0,50):
-            worksheet.write(x+4, 0, str(x+1))
-
-            col = 1
-            ctd = 1
-            #Varre todos os arquivos encontrados na pasta ProvasParaCorrigir
-            for f in files:
-            #Caso o botão de fechar seja precionado e a thread estiver em execusão, esse if finaliza a mesma
-            if stop_threads:
-                stop_threads = False
-                return 
-            try:
-                #Verifica se o arquivo realmente existe, e caso não seja uma imagem
-                #informa o erro ao usuario e continua corrigindo as demais provas
-                im = cv2.imread("ProvasParaCorrigir/"+f, cv2.IMREAD_COLOR)    
-
-                #Redimenciona a imagem para ficar no tamanho adequado
-                altura_imagem, largura_imagem = im.shape[:2]
-                largura_desejada = 1280
-                percentual_largura = float(largura_desejada) / float(largura_imagem)
-                altura_desejada = int((altura_imagem * percentual_largura))
-                im = cv2.resize(im,(largura_desejada, altura_desejada), interpolation = cv2.INTER_CUBIC)
-
-                #Lê a prova
-                imReg, h = alignImages(im, imReference)
-                imReg, h = alignImages(imReg, imReference2)
-
-                #Aplica o blur para remover os ruidos e encontra os contornos da prova
-                blurred = cv2.pyrMeanShiftFiltering(imReg,10,100)
-                gray = cv2.cvtColor(blurred,cv2.COLOR_BGR2GRAY)
-                threshold = cv2.adaptiveThreshold(gray,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,cv2.THRESH_BINARY,15,8)
-                contours,_ = cv2.findContours(threshold,cv2.RETR_LIST,cv2.CHAIN_APPROX_NONE)
-
-
-                #Retorna a lista com as letras assinaladas pelo aluno da prova
-                prova, RA = getAnswer(contours, imReg)
-
-                #Verifica quais questões o aluno acertou e quais ele errou se baseando no gabarito informado
-                #pelo usuario
-                correctAnswers, wrongAnswer = compareTemplate(prova,template)
-
-                #Verifica grandes erros de alinhamentos. Se o mesmo houver força uma exceção
-                if (len(correctAnswers)+len(wrongAnswer) < 50):
-                raise ValueError()
-
-                #Transfere a imagem da pasta ProvasParaCorrigir para a pasta ProvasCorrigidas
-                shutil.move("./ProvasParaCorrigir/"+f, "./ProvasCorrigidas/"+f)
-
-                #Cria outra imagem referente a prova que foi corrigida porem com as letras e numeros em cima
-                #das bolinhas que o aluno assinalou caso precise verificar algum possivel erro no programa
-                cv2.imwrite("ProvasCorrigidas/Resolucao/"+RA+"-"+f, imReg)
-                
-            
-                #Adiciona o numero do RA no Excel
-                worksheet.write(0, col, RA, cell_format_infos)
-                #Escreve o nome da imagem, a quantidade de questões que o aluno acertou, a quantidade de questões que o aluno errou,
-                #as questões acertadas e erradas no arquivo Excel
-                worksheet.write(1, col, str(len(correctAnswers)),cell_format_right)
-                worksheet.write(2, col, str(len(wrongAnswer)),cell_format_right)
-                worksheet.write(3, col, str(len(correctAnswers)*2)+"%",cell_format_right)
-                worksheet.set_column(col, col, 18,cell_format_right)
-
-                row = 4
-                x = 1
-                correct = 0
-                wrong = 0
-                while (x <= 50):
-                if (correct < len(correctAnswers)):
-                    if (int(correctAnswers[correct][0]) == x):
-                    worksheet.write(row, col,str(correctAnswers[correct][1][0]), cell_format_right)
-                    correct += 1
-                if (wrong < len(wrongAnswer)):
-                    if (int(wrongAnswer[wrong][0]) == x):
-                    erradas = ""
-                    for j in range (0,len(wrongAnswer[wrong][1])):
-                        erradas += str(wrongAnswer[wrong][1][j])+" "
-                    worksheet.write(row, col, erradas, cell_format_wrong)
-                    wrong += 1
-
-                row += 1
-                x += 1
-
-                col += 1
-
-                #Atualiza os valores da ProgressBar
-                caixaTexto.insert(tk.INSERT,'Corrigido '+f+"\n")
-                caixaTexto.see(tk.END)
-                progressBar['value'] = (ctd*100)/len(files)
-                janela.update_idletasks()
-            except:
-                try:
-                caixaTexto.insert(tk.INSERT,'Erro ao abrir ou alinhar o arquivo '+f+". Verifique a extensão e a qualidade"
-                "da imagem\n",'error')
-                progressBar['value'] = (ctd*100)/len(files)
-                janela.update_idletasks()
-                except:
-                pass
-            ctd+=1 
-            workbook.close()
-            if stop_threads:
-                stop_threads = False
-                return 
-            caixaTexto.insert(tk.INSERT,'Todas as provas foram corrigidas!\n','done')
-            btParar['state'] = 'disable'
-            
-        except:
-            caixaTexto.insert(tk.INSERT,'Não foi possível carregar o gabarito selecionado! Verifique a extensão '
-            'e integridade do arquivo!\n','error')
-        btIniciar['state'] = 'normal'
-
 
 #Declaração da classe de manipulação do gabarito
 class OpGabarito:
@@ -393,3 +209,188 @@ class OpGabarito:
             correctAnswers.append([str(x+1),self.test[x]])
 
         return correctAnswers, wrongAnswer
+
+#Declaração das var globais
+gabaritoPath = ""
+janela = Tk()
+caixaTexto = None
+btParar = None
+stop_threads = False
+
+#Função main principal
+def iniciar():
+    #Limpa a caixa de texto
+    caixaTexto.delete(1.0,tk.END)
+    global stop_threads
+
+    #Desabilita o botao Iniciar
+    btIniciar['state'] = 'disable'
+
+    # Read reference image
+    #Para evitar que o usuário edite as imagens essencias do programa, elas foram transformadas em npy
+    imReference = np.load("base.npy")
+    imReference2 = np.load("baseCortado.npy")
+
+    
+    try:
+        # Utiliza a imagem que o usuário selecionou.
+        im = cv2.imread(gabaritoPath, cv2.IMREAD_COLOR)
+    
+        #Redimenciona a imagem para ficar no tamanho adequado
+        altura_imagem, largura_imagem = im.shape[:2]
+        largura_desejada = 1280
+        percentual_largura = float(largura_desejada) / float(largura_imagem)
+        altura_desejada = int((altura_imagem * percentual_largura))
+        im = cv2.resize(im,(largura_desejada, altura_desejada), interpolation = cv2.INTER_CUBIC)
+        
+        #Alinha a imagem do gabarito com a imagem base
+        imReg, h = alignImages(im, imReference)
+        imReg, h = alignImages(imReg, imReference2)
+
+        #Acha os contornos do gabarito
+        blurred = cv2.pyrMeanShiftFiltering(imReg,5,100)
+        gray = cv2.cvtColor(blurred,cv2.COLOR_BGR2GRAY)
+        ret, threshold = cv2.threshold(gray,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+        contours,_ = cv2.findContours(threshold,cv2.RETR_LIST,cv2.CHAIN_APPROX_NONE)
+
+        #Envia os contornos do gabarito e recebe uma lista com as letras assinaladas pelo aluno
+        template, _ = getAnswer(contours, imReg)
+
+        #########################################################################################################################
+
+        #Pega todos os arquivos da pasta ProvasParaCorrigir
+        files = []
+        for (dirpath, dirnames, filenames) in walk("ProvasParaCorrigir"):
+        files.extend(filenames)
+
+
+        #Cria o arquivo do Excel
+        workbook = xlsxwriter.Workbook('Resultados.xlsx')
+        worksheet = workbook.add_worksheet()
+
+        cell_format_wrong = workbook.add_format()
+        cell_format_wrong.set_font_color('red')
+        cell_format_wrong.set_align('center')
+        # cell_format_wrong.set_font_size(15)
+        cell_format_right = workbook.add_format()
+        cell_format_right.set_font_color('green')
+        cell_format_right.set_align('center')
+
+        cell_format_infos = workbook.add_format()
+        cell_format_infos.set_bold()
+        cell_format_infos.set_align('center')
+
+        worksheet.write(0, 0, "RA")
+        worksheet.write(1, 0, "Acertos")
+        worksheet.write(2, 0, "Erros")
+        worksheet.write(3, 0, "Porcentagem")
+        worksheet.set_column(0, 0, len("Porcentagem "),cell_format_infos)
+        for x in range(0,50):
+        worksheet.write(x+4, 0, str(x+1))
+
+        col = 1
+        ctd = 1
+        #Varre todos os arquivos encontrados na pasta ProvasParaCorrigir
+        for f in files:
+        #Caso o botão de fechar seja precionado e a thread estiver em execusão, esse if finaliza a mesma
+        if stop_threads:
+            stop_threads = False
+            return 
+        try:
+            #Verifica se o arquivo realmente existe, e caso não seja uma imagem
+            #informa o erro ao usuario e continua corrigindo as demais provas
+            im = cv2.imread("ProvasParaCorrigir/"+f, cv2.IMREAD_COLOR)    
+
+            #Redimenciona a imagem para ficar no tamanho adequado
+            altura_imagem, largura_imagem = im.shape[:2]
+            largura_desejada = 1280
+            percentual_largura = float(largura_desejada) / float(largura_imagem)
+            altura_desejada = int((altura_imagem * percentual_largura))
+            im = cv2.resize(im,(largura_desejada, altura_desejada), interpolation = cv2.INTER_CUBIC)
+
+            #Lê a prova
+            imReg, h = alignImages(im, imReference)
+            imReg, h = alignImages(imReg, imReference2)
+
+            #Aplica o blur para remover os ruidos e encontra os contornos da prova
+            blurred = cv2.pyrMeanShiftFiltering(imReg,10,100)
+            gray = cv2.cvtColor(blurred,cv2.COLOR_BGR2GRAY)
+            threshold = cv2.adaptiveThreshold(gray,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,cv2.THRESH_BINARY,15,8)
+            contours,_ = cv2.findContours(threshold,cv2.RETR_LIST,cv2.CHAIN_APPROX_NONE)
+
+
+            #Retorna a lista com as letras assinaladas pelo aluno da prova
+            prova, RA = getAnswer(contours, imReg)
+
+            #Verifica quais questões o aluno acertou e quais ele errou se baseando no gabarito informado
+            #pelo usuario
+            correctAnswers, wrongAnswer = compareTemplate(prova,template)
+
+            #Verifica grandes erros de alinhamentos. Se o mesmo houver força uma exceção
+            if (len(correctAnswers)+len(wrongAnswer) < 50):
+            raise ValueError()
+
+            #Transfere a imagem da pasta ProvasParaCorrigir para a pasta ProvasCorrigidas
+            shutil.move("./ProvasParaCorrigir/"+f, "./ProvasCorrigidas/"+f)
+
+            #Cria outra imagem referente a prova que foi corrigida porem com as letras e numeros em cima
+            #das bolinhas que o aluno assinalou caso precise verificar algum possivel erro no programa
+            cv2.imwrite("ProvasCorrigidas/Resolucao/"+RA+"-"+f, imReg)
+            
+        
+            #Adiciona o numero do RA no Excel
+            worksheet.write(0, col, RA, cell_format_infos)
+            #Escreve o nome da imagem, a quantidade de questões que o aluno acertou, a quantidade de questões que o aluno errou,
+            #as questões acertadas e erradas no arquivo Excel
+            worksheet.write(1, col, str(len(correctAnswers)),cell_format_right)
+            worksheet.write(2, col, str(len(wrongAnswer)),cell_format_right)
+            worksheet.write(3, col, str(len(correctAnswers)*2)+"%",cell_format_right)
+            worksheet.set_column(col, col, 18,cell_format_right)
+
+            row = 4
+            x = 1
+            correct = 0
+            wrong = 0
+            while (x <= 50):
+            if (correct < len(correctAnswers)):
+                if (int(correctAnswers[correct][0]) == x):
+                worksheet.write(row, col,str(correctAnswers[correct][1][0]), cell_format_right)
+                correct += 1
+            if (wrong < len(wrongAnswer)):
+                if (int(wrongAnswer[wrong][0]) == x):
+                erradas = ""
+                for j in range (0,len(wrongAnswer[wrong][1])):
+                    erradas += str(wrongAnswer[wrong][1][j])+" "
+                worksheet.write(row, col, erradas, cell_format_wrong)
+                wrong += 1
+
+            row += 1
+            x += 1
+
+            col += 1
+
+            #Atualiza os valores da ProgressBar
+            caixaTexto.insert(tk.INSERT,'Corrigido '+f+"\n")
+            caixaTexto.see(tk.END)
+            progressBar['value'] = (ctd*100)/len(files)
+            janela.update_idletasks()
+        except:
+            try:
+            caixaTexto.insert(tk.INSERT,'Erro ao abrir ou alinhar o arquivo '+f+". Verifique a extensão e a qualidade"
+            "da imagem\n",'error')
+            progressBar['value'] = (ctd*100)/len(files)
+            janela.update_idletasks()
+            except:
+            pass
+        ctd+=1 
+        workbook.close()
+        if stop_threads:
+            stop_threads = False
+            return 
+        caixaTexto.insert(tk.INSERT,'Todas as provas foram corrigidas!\n','done')
+        btParar['state'] = 'disable'
+        
+    except:
+        caixaTexto.insert(tk.INSERT,'Não foi possível carregar o gabarito selecionado! Verifique a extensão '
+        'e integridade do arquivo!\n','error')
+    btIniciar['state'] = 'normal'
