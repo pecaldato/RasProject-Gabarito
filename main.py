@@ -19,7 +19,7 @@ import shutil
 #Declarando algumas variáveis globais
 #5000 0,05
 MAX_MATCHES = 5000
-GOOD_MATCH_PERCENT = 0.05
+GOOD_MATCH_PERCENT = 0.04
 gabaritoPath = ""
 janela = Tk()
 caixaTexto = None
@@ -74,16 +74,16 @@ def alignImages(im1, im2):
 #Função que retorna a lista com as letras assinaladas pelo aluno 
 def getAnswer(contours, imReg):
   #List of the beginning to end of Xo pixels of every question
-  ListX = [[147,165],[168,185],[187,205],[207,225],[227,245],[274,292],[294,312],[314,332],[334,352],[354,373],[403,421],
-  [423,440],[443,461],[463,480],[483,501]]
+  ListX = [[166,203],[204,239],[240,276],[277,312],[313,349],[426,463],[464,499],[500,536],[537,572],[573,609],[686,723],
+  [724,759],[760,796],[797,832],[833,869],[946,983],[984,1019],[1020,1056],[1057,1092],[1093,1129]]
 
   #List of the beginning to end of Yo pixels of every question
-  ListY = [[274,291],[297,315],[322,340],[347,365],[371,390],[396,414],[420,439],[445,463],[469,487],[494,512],[531,549],
-  [556,574],[580,598],[605,622],[629,647],[653,672],[678,696], [702,721],[727,745],[751,770],[17,35],[41,59],[66,84],
-  [90,108],[115,133],[140,157],[163,181],[189,207],[212,231],[237,255]]
+  ListY = [[668,705],[706,741],[742,778],[779,814],[815,851],[852,888],[889,924],[925,961],[962,997],[998,1034],[1035,1071],
+  [1072,1107],[1144,1181],[1182,1217],[1219,1254],[1255,1290],[1291,1327], [1328,1364],[1365,1400],[1401,1437],[1438,1473],[1474,1510],[1511,1547],
+  [1548,1583],[1584,1620],[1621,1656]]
 
-  RAx = [[148,164],[168,184],[188,204], [208,224], [228,244], [248,264],[268,284],[288,304],[308,324],[328,344]]
-  RAy = [[124,140],[148,164],[172,188],[196,212]]
+  RAx = [[798,835],[836,871],[872,908], [909,944], [945,981], [982,1018],[1019,1054],[1055,1091],[1092,1127],[1128,1164]]
+  RAy = [[448,484],[485,521],[522,557],[558,594]]
 
   #Declaring the list which have the letters of the questions
   listRet = []
@@ -95,38 +95,41 @@ def getAnswer(contours, imReg):
   #Take the central pixel of the contours and compare to the lists
   for c in contours:
     #Only takes the central point of contours who have 100<Area<350
-    if 100<cv2.contourArea(c)<300:
+    if 20<cv2.contourArea(c)<150:
       # calculate moments for each contour
       M = cv2.moments(c)
  
       # calculate x,y coordinate of center
       cX = int(M["m10"] / M["m00"])
       cY = int(M["m01"] / M["m00"])
+      cv2.rectangle(imReg, (cX - 8, cY - 8), (cX + 8, cY + 8), (255,0,0), 1)
 
       #Compare the central point to the Xo value of every letter and question number
-      if(cX>=360 or cY>=243):
-          for x in range(0, 15):
+      if(cX<=760 or cY>=625):
+          for x in range(0, 20):
               if (cX >= ListX[x][0] and cX <= ListX[x][1]):
-                  for j in range(0, 30):
+                  for j in range(0, 26):
                       if (cY >= ListY[j][0] and cY <= ListY[j][1]):
                           cv2.circle(imReg, (cX, cY), 0, (255, 255, 255), -15)
-                          if (x==0 or x==5 or x==10):
+                          if (x==0 or x==5 or x==10 or x==15):
                               letra = "A"
-                          elif (x==1 or x==6 or x==11):
+                          elif (x==1 or x==6 or x==11 or x==16):
                               letra = "B"
-                          elif (x==2 or x==7 or x==12):
+                          elif (x==2 or x==7 or x==12 or x==17):
                               letra = "C"
-                          elif (x==3 or x==8 or x==13):
+                          elif (x==3 or x==8 or x==13 or x==18):
                               letra = "D"
-                          elif (x==4 or x==9 or x==14):
+                          elif (x==4 or x==9 or x==14 or x==19):
                               letra = "E"  
 
                           if (cX >= ListX[0][0] and cX <= ListX[4][1]):
-                              numero = str(j+1)
+                              numero = str(j + 1)
                           elif (cX >= ListX[5][0] and cX <= ListX[9][1]):
-                              numero = str(j + 21)
+                              numero = str(j + 27)
                           elif (cX >= ListX[10][0] and cX <= ListX[14][1]):
-                              numero = str(j + 21)            
+                              numero = str(j + 53)
+                          elif (cX >= ListX[15][0] and cX <= ListX[19][1]):  
+                              numero = str(j + 79)           
 
                           listRet.append(letra)
                           listNumbers.append(numero)
@@ -180,10 +183,7 @@ def getAnswer(contours, imReg):
 
   #Cria uma string com o RA do aluno
   listRA.reverse()
-  if (len(listRA)!= 4):
-    RA = "Não identificado"
-  else:
-      RA = ''.join(listRA)
+  RA = ''.join(listRA)
   
 
   return listOrder, RA
@@ -224,7 +224,7 @@ def iniciar():
   
     #Redimenciona a imagem para ficar no tamanho adequado
     altura_imagem, largura_imagem = im.shape[:2]
-    largura_desejada = 720
+    largura_desejada = 1241
     percentual_largura = float(largura_desejada) / float(largura_imagem)
     altura_desejada = int((altura_imagem * percentual_largura))
     im = cv2.resize(im,(largura_desejada, altura_desejada), interpolation = cv2.INTER_CUBIC)
@@ -289,7 +289,7 @@ def iniciar():
 
         #Redimenciona a imagem para ficar no tamanho adequado
         altura_imagem, largura_imagem = im.shape[:2]
-        largura_desejada = 720
+        largura_desejada = 1280
         percentual_largura = float(largura_desejada) / float(largura_imagem)
         altura_desejada = int((altura_imagem * percentual_largura))
         im = cv2.resize(im,(largura_desejada, altura_desejada), interpolation = cv2.INTER_CUBIC)
@@ -307,6 +307,8 @@ def iniciar():
 
         #Retorna a lista com as letras assinaladas pelo aluno da prova
         prova, RA = getAnswer(contours, imReg)
+        print(prova)
+        print(RA)
 
         #Verifica quais questões o aluno acertou e quais ele errou se baseando no gabarito informado
         #pelo usuario
