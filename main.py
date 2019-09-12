@@ -19,7 +19,7 @@ import shutil
 #Declarando algumas variáveis globais
 #5000 0,05
 MAX_MATCHES = 5000
-GOOD_MATCH_PERCENT = 0.04
+GOOD_MATCH_PERCENT = 0.05
 gabaritoPath = ""
 janela = Tk()
 caixaTexto = None
@@ -95,14 +95,13 @@ def getAnswer(contours, imReg):
   #Take the central pixel of the contours and compare to the lists
   for c in contours:
     #Only takes the central point of contours who have 100<Area<350
-    if 20<cv2.contourArea(c)<150:
+    if 100<cv2.contourArea(c)<300:
       # calculate moments for each contour
       M = cv2.moments(c)
  
       # calculate x,y coordinate of center
       cX = int(M["m10"] / M["m00"])
       cY = int(M["m01"] / M["m00"])
-      cv2.rectangle(imReg, (cX - 8, cY - 8), (cX + 8, cY + 8), (255,0,0), 1)
 
       #Compare the central point to the Xo value of every letter and question number
       if(cX<=760 or cY>=625):
@@ -129,7 +128,7 @@ def getAnswer(contours, imReg):
                           elif (cX >= ListX[10][0] and cX <= ListX[14][1]):
                               numero = str(j + 53)
                           elif (cX >= ListX[15][0] and cX <= ListX[19][1]):  
-                              numero = str(j + 79)           
+                              numero = str(j + 79)            
 
                           listRet.append(letra)
                           listNumbers.append(numero)
@@ -183,7 +182,10 @@ def getAnswer(contours, imReg):
 
   #Cria uma string com o RA do aluno
   listRA.reverse()
-  RA = ''.join(listRA)
+  if (len(listRA)!= 4):
+    RA = "Não identificado"
+  else:
+      RA = ''.join(listRA)
   
 
   return listOrder, RA
@@ -224,7 +226,7 @@ def iniciar():
   
     #Redimenciona a imagem para ficar no tamanho adequado
     altura_imagem, largura_imagem = im.shape[:2]
-    largura_desejada = 1241
+    largura_desejada = 1280
     percentual_largura = float(largura_desejada) / float(largura_imagem)
     altura_desejada = int((altura_imagem * percentual_largura))
     im = cv2.resize(im,(largura_desejada, altura_desejada), interpolation = cv2.INTER_CUBIC)
@@ -307,8 +309,6 @@ def iniciar():
 
         #Retorna a lista com as letras assinaladas pelo aluno da prova
         prova, RA = getAnswer(contours, imReg)
-        print(prova)
-        print(RA)
 
         #Verifica quais questões o aluno acertou e quais ele errou se baseando no gabarito informado
         #pelo usuario
