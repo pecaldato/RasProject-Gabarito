@@ -3,28 +3,29 @@ import numpy as np
 from os import walk
 import os
 
-from user import Image
-from user import Respostas
+from Image import Image
+from respostas import Respostas
 
 
 def main ():
-    base_gabarito_path = 'baseGabarito.jpeg'
-    gabarito_path = 'gabarito.jpeg'
+    base_gabarito_path = "gabarito.jpg"
+    gabarito_path = "prova.jpg"
+    
+    img = Image(base_gabarito_path)
 
-    Image(base_gabarito_path)
-    gabarito_image = Image.loadImage(gabarito_path)
-    align_image,_ = Image.align_image(gabarito_image)
-    contours= Image.get_contours(align_image)
+    gabarito_image = img.loadImage(gabarito_path)
+    align_image = img.align_image(gabarito_image)
+    contours = img.get_contours(align_image)
 
-    Respostas(contours)
+    resp = Respostas(contours)
 
     files = []
     for (dirpath, dirnames, test_path) in walk("ProvasParaCorrigir"):
-        gabarito_image = Image.loadImage(test_path)
-        align_image = Image.align_image(gabarito_image)
-        contours = Image.get_contours(align_image)
-        checked_answers = Respostas.get_answers(contours)
-        correct_answers = Respostas.compare_answers(checked_answers)
+        gabarito_image = img.loadImage(gabarito_path)
+        align_image = img.align_image(gabarito_image)
+        contours = img.get_contours(align_image)
+        ra, checked_answers = resp.get_answers(contours)
+        correct_answers = resp.compare_answers(checked_answers)
 
 
 

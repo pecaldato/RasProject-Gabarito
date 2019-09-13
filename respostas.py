@@ -1,3 +1,6 @@
+import cv2
+import numpy as np
+ 
 class Respostas:
 
     #retorna lista de RA e respostas, baseado no parâmetro "contours"
@@ -19,7 +22,7 @@ class Respostas:
         listOrder = []
         listRA = []
 
-        for c in self.contours:
+        for c in contours:
             #Only takes the central point of contours who have 100<Area<350
             if 100<cv2.contourArea(c)<300:
                 # calculate moments for each contour
@@ -35,7 +38,7 @@ class Respostas:
                         if (cX >= ListX[x][0] and cX <= ListX[x][1]):
                             for j in range(0, 26):
                                 if (cY >= ListY[j][0] and cY <= ListY[j][1]):
-                                    cv2.circle(imReg, (cX, cY), 0, (255, 255, 255), -15)
+                                    # cv2.circle(imReg, (cX, cY), 0, (255, 255, 255), -15)
                                     if (x==0 or x==5 or x==10 or x==15):
                                         letra = "A"
                                     elif (x==1 or x==6 or x==11 or x==16):
@@ -58,7 +61,7 @@ class Respostas:
 
                                     listRet.append(letra)
                                     listNumbers.append(numero)
-                                    cv2.putText(imReg, numero+' '+letra, (cX - 25, cY),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+                                    # cv2.putText(imReg, numero+' '+letra, (cX - 25, cY),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
                 
                 else:
                     for x in range(0,10):
@@ -66,7 +69,9 @@ class Respostas:
                             for j in range(0,4):
                                 if(cY >= RAy[j][0] and cY <= RAy[j][1]):
                                     listRA.append(str(x))
-                                    cv2.putText(imReg, str(x), (cX - 25, cY),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+                                    # cv2.putText(imReg, str(x), (cX - 25, cY),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+
+        
         x = 0
         while x < len(listNumbers):
             ctd = x
@@ -76,16 +81,17 @@ class Respostas:
                 ctd += 1
                 if (ctd == len(listNumbers)):
                     break
-        x = ctd
-        listOrder.append(aux)
+            x = ctd
+            listOrder.append(aux)
+        
         listRA = listRA.reverse()       
         return listRA, listOrder
 
     #método da construtora
     def __init__(self, contours):
-
+        aff=contours
         #pega o vetor de respostas do gabarito
-        _,self.gabarito = get_answers(contours)
+        _,self.gabarito = self.get_answers(aff)
 
     #retorna um dicionário com as listas de respostas corretas e incorretas
     def compare_answers(self, respostas):
@@ -97,8 +103,5 @@ class Respostas:
                 wrongAnswer.append([str(x+1), respostas[x]])
             else:
                 correctAnswers.append([str(x+1), Respostas[x]])
-        Answers = {'correctAnswers' = correctAnswers, 'wrongAnswers:' = wrongAnswers}
+        Answers = {'correctAnswers': correctAnswers, 'wrongAnswers:': wrongAnswers}
         return Answers
-
-    
-

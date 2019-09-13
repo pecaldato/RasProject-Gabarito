@@ -1,11 +1,12 @@
+import cv2
+import numpy as np
+
 class Image:
-    #Declaração das variaveis globais
-    MAX_MATCHES = 5000
-    GOOD_MATCH_PERCENT = 0.05
-    
     # Função iniciadora da classe.
     def __init__(self, base):
         self.base = cv2.imread(base, cv2.IMREAD_COLOR)
+        self.MAX_MATCHES = 5000
+        self.GOOD_MATCH_PERCENT = 0.05
 
     #Função para carregar a imagem
     def loadImage(self, gabaritoPath):
@@ -19,7 +20,7 @@ class Image:
         im2Gray = cv2.cvtColor(self.base, cv2.COLOR_BGR2GRAY)
         
         # Detect ORB features and compute descriptors.
-        orb = cv2.ORB_create(MAX_MATCHES)
+        orb = cv2.ORB_create(self.MAX_MATCHES)
         keypoints1, descriptors1 = orb.detectAndCompute(im1Gray, None)
         keypoints2, descriptors2 = orb.detectAndCompute(im2Gray, None)
         
@@ -31,7 +32,7 @@ class Image:
         matches.sort(key=lambda x: x.distance, reverse=False)
 
         # Remove not so good matches
-        numGoodMatches = int(len(matches) * GOOD_MATCH_PERCENT)
+        numGoodMatches = int(len(matches) * self.GOOD_MATCH_PERCENT)
         matches = matches[:numGoodMatches]
 
         # Draw top matches
@@ -53,7 +54,7 @@ class Image:
         height, width, channels = self.base.shape
         aligned_image = cv2.warpPerspective(gabarito_image, h, (width, height))
         
-        return aligned_image, h
+        return aligned_image
 
     #Função para determinar os contornos do gabarito
     def get_contours(self, aligned_image):
