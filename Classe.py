@@ -1,19 +1,3 @@
-import cv2
-import numpy as np
-import xlsxwriter
-from os import walk
-import os
-from time import sleep
-from tkinter import filedialog
-from tkinter import messagebox
-from tkinter.ttk import Progressbar
-from tkinter import scrolledtext
-from tkinter import *
-import tkinter as tk
-from tkinter import Menu
-import threading
-import shutil
-
 #Declaração da classe de manipulação de imagem
 class Image:
     #Declaração das variáveis globais
