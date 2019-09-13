@@ -1,4 +1,8 @@
 class Image:
+    #Declaração das variaveis globais
+    MAX_MATCHES = 5000
+    GOOD_MATCH_PERCENT = 0.05
+    
     # Função iniciadora da classe.
     def __init__(self, base):
         self.base = cv2.imread(base, cv2.IMREAD_COLOR)
