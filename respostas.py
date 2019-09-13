@@ -69,13 +69,13 @@ class Respostas:
                                     cv2.putText(imReg, str(x), (cX - 25, cY),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
         x = 0
         while x < len(listNumbers):
-        ctd = x
-        aux = []
-        while (int(listNumbers[ctd]) == int(listNumbers[x])):
-        aux.append(listRet[ctd])
-        ctd += 1
-        if (ctd == len(listNumbers)):
-            break
+            ctd = x
+            aux = []
+            while (int(listNumbers[ctd]) == int(listNumbers[x])):
+                aux.append(listRet[ctd])
+                ctd += 1
+                if (ctd == len(listNumbers)):
+                    break
         x = ctd
         listOrder.append(aux)
         listRA = listRA.reverse()       
