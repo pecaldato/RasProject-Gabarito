@@ -92,7 +92,6 @@ class Respostas:
         
         wrongAnswers = []
         correctAnswer = []
-        respostas = respostas
         for x in range(len(respostas)):
             if (len(respostas[x]) > 1) or respostas[x] != self.gabarito[x]:
                 wrongAnswer.append([str(x+1), respostas[x]])
