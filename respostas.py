@@ -97,11 +97,11 @@ class Respostas:
     def compare_answers(self, respostas):
         
         wrongAnswers = []
-        correctAnswer = []
-        for x in respostas:
+        correctAnswers = []
+        for x in range((len(respostas))):
             if (len(respostas[x]) > 1) or respostas[x] != self.gabarito[x]:
-                wrongAnswer.append([str(x+1), respostas[x]])
+                wrongAnswers.append([str(x+1), respostas[x]])
             else:
-                correctAnswers.append([str(x+1), Respostas[x]])
+                correctAnswers.append([str(x+1), respostas[x]])
         Answers = {'correctAnswers': correctAnswers, 'wrongAnswers:': wrongAnswers}
         return Answers
