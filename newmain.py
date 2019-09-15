@@ -1,8 +1,7 @@
 import cv2
 import numpy as np
 from os import walk
-import os
-
+import os     
 from Image import Image
 from respostas import Respostas
 
@@ -12,8 +11,8 @@ def main ():
     gabarito_path = "prova.jpg"
     
     img = Image(base_gabarito_path)
-
-    gabarito_image = img.loadImage(gabarito_path)
+    #im.resize()
+    gabarito_image = img.loadImage(gabarito_path)  
     align_image = img.align_image(gabarito_image)
     contours = img.get_contours(align_image)
 

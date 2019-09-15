@@ -63,3 +63,11 @@ class Image:
         ret, threshold = cv2.threshold(gray,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
         contours,_ = cv2.findContours(threshold,cv2.RETR_LIST,cv2.CHAIN_APPROX_NONE)
         return contours
+
+    #Redimenciona a imagem para ficar no tamanho adequado
+    #def resize(self, refIm):
+     #   altura_imagem, largura_imagem = refIm.shape[:2]
+      #  largura_desejada = 1280
+       # percentual_largura = float(largura_desejada) / float(largura_imagem)
+        #altura_desejada = int((altura_imagem * percentual_largura))
+        #im = cv2.resize(im,(largura_desejada, altura_desejada), interpolation = cv2.INTER_CUBIC)    
