@@ -11,8 +11,12 @@ def main ():
     gabarito_path = "prova.jpg"
     
     img = Image(base_gabarito_path)
-    #im.resize()
-    gabarito_image = img.loadImage(gabarito_path)  
+    gabarito_image = img.loadImage(gabarito_path)
+    gabarito_image = img.resize(gabarito_image)  
+    print(gabarito_image.shape)
+    cv2.imshow('img', gabarito_image)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
     align_image = img.align_image(gabarito_image)
     contours = img.get_contours(align_image)
 
@@ -26,6 +30,7 @@ def main ():
         ra, checked_answers = resp.get_answers(contours)
         correct_answers = resp.compare_answers(checked_answers)
         print(correct_answers)
+        print(ra)
 
 
 

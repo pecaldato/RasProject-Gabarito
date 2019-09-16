@@ -65,9 +65,10 @@ class Image:
         return contours
 
     #Redimenciona a imagem para ficar no tamanho adequado
-    #def resize(self, refIm):
-     #   altura_imagem, largura_imagem = refIm.shape[:2]
-      #  largura_desejada = 1280
-       # percentual_largura = float(largura_desejada) / float(largura_imagem)
-        #altura_desejada = int((altura_imagem * percentual_largura))
-        #im = cv2.resize(im,(largura_desejada, altura_desejada), interpolation = cv2.INTER_CUBIC)    
+    def resize(self, img):
+        altura_imagem, largura_imagem = self.base.shape[:2]
+        largura_desejada = 905
+        percentual_largura = float(largura_desejada) / float(largura_imagem)
+        altura_desejada = int((altura_imagem * percentual_largura))
+        im = cv2.resize(img,(largura_desejada, altura_desejada), interpolation = cv2.INTER_CUBIC)
+        return im    
