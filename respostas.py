@@ -9,12 +9,12 @@ class Respostas:
         #define os ranges que serão utilizados para localizar as questões/respostas
         ListX = [[93,113],[114,135],[136,155],[156,175],[176,196],[240,260],[261,280],[281,300],[301,320],[321,343],[385,405],
         [406,426],[427,447],[448,468],[469,489],[532,552],[553,573],[574,594],[595,615],[616,636]]
-        ListY = ListY = [[472,499],[500,524],[525,550],[551,576],[577,602],[603,628],[629,653],[654,679],[680,705],[706,732],[733,757],
+        ListY = [[472,499],[500,524],[525,550],[551,576],[577,602],[603,628],[629,653],[654,679],[680,705],[706,732],[733,757],
         [758,782],[809,835],[836,861],[862,886],[887,913],[914,938],[939,963],[964,989],[990,1015],[1016,1041],[1042,1067],[1068,1092],
         [1093,1119],[1120,1145],[1146,1171]]
 
         #define os ranges que serão utilizados para localizar o RA
-        RAx = [[564,590],[591,616],[617,642], [643,668], [669,694], [695,720],[721,746],[747,772],[773,798],[799,824]]
+        RAx = [[448,469],[470,489],[490,510], [511,530], [531,551], [552,572],[573,592],[593,613],[614,633],[634,654]]
         RAy = [[317,343],[344,369],[370,395],[396,421]]
 
         listRet = []
@@ -26,7 +26,7 @@ class Respostas:
         for c in contours:
             #Only takes the central point of contours who have 100<Area<350
             i += 1
-            if (20<cv2.contourArea(c)<300):
+            if (60<cv2.contourArea(c)<80):
                 # calculate moments for each contour
                 M = cv2.moments(c)
                 cv2.drawContours(img, c, -1, (0,255,0), 3)
@@ -64,7 +64,7 @@ class Respostas:
 
                                     listRet.append(letra)
                                     listNumbers.append(numero)
-                                    cv2.putText(img, numero+' '+letra, (cX - 25, cY),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
+                                    cv2.putText(img, numero+' '+letra, (cX - 25, cY),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
                 
                 else:
                     for x in range(0,10):
@@ -72,9 +72,30 @@ class Respostas:
                             for j in range(0,4):
                                 if(cY >= RAy[j][0] and cY <= RAy[j][1]):
                                     listRA.append(str(x))
-                                    # cv2.putText(imReg, str(x), (cX - 25, cY),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+                                    cv2.putText(img, str(x), (cX - 25, cY),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
-        
+        print(listRet)
+        print(listNumbers)
+        for x in range(0,len(listNumbers)-1):
+            for j in range(x,len(listNumbers)):
+                if (int(listNumbers[x]) >= int(listNumbers[j])):
+                    aux = listNumbers[x]
+                    listNumbers[x] = listNumbers[j]
+                    listNumbers[j] = aux
+
+                    aux = listRet[x]
+                    listRet[x] = listRet[j]
+                    listRet[j] = aux
+
+
+  #Insere os - nas questões deixadas em branco
+        ctd = 1
+        for x in range(0,len(listNumbers)):
+            if (listNumbers[x]!=listNumbers[x-1]):
+                if (ctd != int(listNumbers[x])):
+                    listNumbers.insert(x,str(ctd))
+                    listRet.insert(x,"-")
+                ctd += 1
         x = 0
         while x < len(listNumbers):
             ctd = x
