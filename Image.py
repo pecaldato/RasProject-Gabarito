@@ -36,8 +36,8 @@ class Image:
         matches = matches[:numGoodMatches]
 
         # Draw top matches
-        # imMatches = cv2.drawMatches(im1, keypoints1, im2, keypoints2, matches, None)
-        # cv2.imwrite("matches.jpeg", imMatches)
+        imMatches = cv2.drawMatches(im1Gray, keypoints1, im2Gray, keypoints2, matches, None)
+        cv2.imwrite("matches.jpeg", imMatches)
         
         # Extract location of good matches
         points1 = np.zeros((len(matches), 2), dtype=np.float32)
@@ -53,6 +53,7 @@ class Image:
         # Use homography
         height, width, channels = self.base.shape
         aligned_image = cv2.warpPerspective(gabarito_image, h, (width, height))
+        #cv2.imwrite('alinhada.jpeg', aligned_image)
         
         return aligned_image
 
