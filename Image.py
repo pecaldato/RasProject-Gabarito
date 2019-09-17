@@ -25,6 +25,7 @@ class Image:
         keypoints2, descriptors2 = orb.detectAndCompute(im2Gray, None)
         
         # Match features.
+        #matcher = cv2.BFMatcher(cv2.NORM_L2, crossCheck=True)
         matcher = cv2.DescriptorMatcher_create(cv2.DESCRIPTOR_MATCHER_BRUTEFORCE_HAMMING)
         matches = matcher.match(descriptors1, descriptors2, None)
         

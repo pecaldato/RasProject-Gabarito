@@ -74,8 +74,8 @@ class Respostas:
                                     listRA.append(str(x))
                                     cv2.putText(img, str(x), (cX - 25, cY),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
-        print(listRet)
-        print(listNumbers)
+        #print(listRet)
+        #print(listNumbers)
         for x in range(0,len(listNumbers)-1):
             for j in range(x,len(listNumbers)):
                 if (int(listNumbers[x]) >= int(listNumbers[j])):

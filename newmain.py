@@ -7,8 +7,8 @@ from respostas import Respostas
 
 
 def main ():
-    base_gabarito_path = "base.jpeg"
-    gabarito_path = "prova2.jpeg"
+    base_gabarito_path = "base.jpg"
+    gabarito_path = "9.jpeg"
     
     img = Image(base_gabarito_path)
     gabarito_image = img.loadImage(gabarito_path)
