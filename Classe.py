@@ -1,13 +1,12 @@
 #Declaração da classe de manipulação de imagem
 class Image:
-    #Declaração das variáveis globais
-    MAX_MATCHES = 5000
-    GOOD_MATCH_PERCENT = 0.05
 
     # Função iniciadora da classe.
     def __init__(self, im1, im2):
         self.im1 = im1
         self.im2 = im2
+        MAX_MATCHES = 5000
+    	GOOD_MATCH_PERCENT = 0.05
 
     #Função de alinhamento de imagens. im2 é a referência.
     def alignImages(self, im1, im2):

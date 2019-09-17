@@ -4,7 +4,7 @@ import numpy as np
 class Respostas:
 
     #retorna lista de RA e respostas, baseado no parâmetro "contours"
-    def get_answers(self, contours):
+    def get_answers(self, contours, img):
 
         #define os ranges que serão utilizados para localizar as questões/respostas
         ListX = [[117,143],[144,169],[170,195],[196,221],[222,247],[301,327],[328,353],[354,379],[380,405],[406,431],[485,511],
@@ -21,12 +21,15 @@ class Respostas:
         listNumbers = []
         listOrder = []
         listRA = []
-
+        i=0
+        
         for c in contours:
             #Only takes the central point of contours who have 100<Area<350
-            if 90<cv2.contourArea(c)<300:
+            i += 1
+            if (20<cv2.contourArea(c)<300):
                 # calculate moments for each contour
                 M = cv2.moments(c)
+                cv2.drawContours(img, c, -1, (0,255,0), 3)
  
                 # calculate x,y coordinate of center
                 cX = int(M["m10"] / M["m00"])
@@ -84,14 +87,17 @@ class Respostas:
             x = ctd
             listOrder.append(aux)
         
-        listRA = listRA.reverse()     
+        listRA = listRA.reverse()  
+
+        # cv2.imshow('oi',img)
+        # cv2.waitKey()   
+        cv2.imwrite('penis.jpeg', img)
         return listRA, listOrder
 
     #método da construtora
-    def __init__(self, contours):
-        aff=contours
+    def __init__(self, contours, align_image):
         #pega o vetor de respostas do gabarito
-        _,self.gabarito = self.get_answers(aff)
+        _,self.gabarito = self.get_answers(contours, align_image)
 
     #retorna um dicionário com as listas de respostas corretas e incorretas
     def compare_answers(self, respostas):

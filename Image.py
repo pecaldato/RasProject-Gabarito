@@ -58,10 +58,14 @@ class Image:
 
     #Função para determinar os contornos do gabarito
     def get_contours(self, aligned_image):
-        blurred = cv2.pyrMeanShiftFiltering(aligned_image,5,100)
+        blurred = cv2.pyrMeanShiftFiltering(aligned_image,3,200)
         gray = cv2.cvtColor(blurred,cv2.COLOR_BGR2GRAY)
         ret, threshold = cv2.threshold(gray,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
         contours,_ = cv2.findContours(threshold,cv2.RETR_LIST,cv2.CHAIN_APPROX_NONE)
+        cv2.imshow('aff', blurred)
+        cv2.waitKey()
+        
+        
         return contours
 
     #Redimenciona a imagem para ficar no tamanho adequado
