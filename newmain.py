@@ -7,8 +7,8 @@ from respostas import Respostas
 
 
 def main ():
-    base_gabarito_path = "gabarito.jpg"
-    gabarito_path = "prova.jpg"
+    base_gabarito_path = "base.jpeg"
+    gabarito_path = "prova2.jpeg"
     
     img = Image(base_gabarito_path)
     gabarito_image = img.loadImage(gabarito_path)
@@ -30,7 +30,7 @@ def main ():
         ra, checked_answers = resp.get_answers(contours, align_image)
         correct_answers = resp.compare_answers(checked_answers)
         print(correct_answers)
-        print(ra)
+        #print(ra)
 
 
 
