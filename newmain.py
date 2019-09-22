@@ -29,8 +29,8 @@ def main ():
             contours = img.get_contours(align_image)
             ra, checked_answers = resp.get_answers(contours, align_image)
             correct_answers = resp.compare_answers(checked_answers)
-            print(correct_answers)
-            print("\n")
+            #print(correct_answers)
+            #print("\n")
             #print(ra)
 
 

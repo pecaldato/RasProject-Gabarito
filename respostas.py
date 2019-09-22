@@ -14,8 +14,8 @@ class Respostas:
         [1093,1119],[1120,1145],[1146,1171]]
 
         #define os ranges que serão utilizados para localizar o RA
-        RAx = [[448,469],[470,489],[490,510], [511,530], [531,551], [552,572],[573,592],[593,613],[614,633],[634,654]]
-        RAy = [[317,343],[344,369],[370,395],[396,421]]
+        RAx = [[450,469],[470,489],[490,510], [511,530], [531,551], [552,572],[573,592],[593,613],[614,633],[634,654]]
+        RAy = [[318,344],[345,369],[370,395],[396,421]]
 
         listRet = []
         listNumbers = []
@@ -34,6 +34,7 @@ class Respostas:
                 # calculate x,y coordinate of center
                 cX = int(M["m10"] / M["m00"])
                 cY = int(M["m01"] / M["m00"])
+                cv2.drawContours(img, c, -1, (0,255,0), 3)
 
                 #Compare the central point to the Xo value of every letter and question number
                 if(cX<=760 or cY>=625):
@@ -41,7 +42,7 @@ class Respostas:
                         if (cX >= ListX[x][0] and cX <= ListX[x][1]):
                             for j in range(0, 26):
                                 if (cY >= ListY[j][0] and cY <= ListY[j][1]):
-                                    # cv2.circle(imReg, (cX, cY), 0, (255, 255, 255), -15)
+                                    cv2.circle(img, (cX, cY), 0, (0, 255, 0), -15)
                                     if (x==0 or x==5 or x==10 or x==15):
                                         letra = "A"
                                     elif (x==1 or x==6 or x==11 or x==16):
@@ -64,18 +65,20 @@ class Respostas:
 
                                     listRet.append(letra)
                                     listNumbers.append(numero)
-                                    cv2.putText(img, numero+' '+letra, (cX - 25, cY),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
-                                    cv2.drawContours(img, c, -1, (0,255,0), 3)
+                                    cv2.putText(img, numero+' '+letra, (cX - 25, cY),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
+                                    cv2.drawContours(img, c, -1, (0,255,0), 1)
                 
-                else:
-                    for x in range(0,10):
-                        if(cX >= RAx[x][0] and cX <= RAx[x][1]):
-                            for j in range(0,4):
-                                if(cY >= RAy[j][0] and cY <= RAy[j][1]):
-                                    listRA.append(str(x))
-                                    cv2.putText(img, str(x), (cX - 25, cY),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+                
+                for x in range(0,10):
+                    if(cX >= RAx[x][0] and cX <= RAx[x][1]):
+                        for j in range(0,4):
+                            if(cY >= RAy[j][0] and cY <= RAy[j][1]):
+                                listRA.append(str(x))
+                                cv2.putText(img, str(x), (cX - 25, cY),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
+                                cv2.drawContours(img, c, -1, (0,255,0), 1)
 
         #print(listRet)
+        #print(listRA)
         #print(listNumbers)
         for x in range(0,len(listNumbers)-1):
             for j in range(x,len(listNumbers)):
