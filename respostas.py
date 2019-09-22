@@ -1,8 +1,8 @@
 import cv2
 import numpy as np
  
-class Respostas:
 
+class Respostas:
     #retorna lista de RA e respostas, baseado no parâmetro "contours"
     def get_answers(self, contours, img):
 
@@ -26,10 +26,10 @@ class Respostas:
         for c in contours:
             #Only takes the central point of contours who have 100<Area<350
             i += 1
-            if (60<cv2.contourArea(c)<80):
+            if (10<cv2.contourArea(c)<200):
                 # calculate moments for each contour
                 M = cv2.moments(c)
-                cv2.drawContours(img, c, -1, (0,255,0), 3)
+                
  
                 # calculate x,y coordinate of center
                 cX = int(M["m10"] / M["m00"])
@@ -65,6 +65,7 @@ class Respostas:
                                     listRet.append(letra)
                                     listNumbers.append(numero)
                                     cv2.putText(img, numero+' '+letra, (cX - 25, cY),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+                                    cv2.drawContours(img, c, -1, (0,255,0), 3)
                 
                 else:
                     for x in range(0,10):
@@ -110,15 +111,17 @@ class Respostas:
         
         listRA = listRA.reverse()  
 
-         #cv2.imshow('oi',img)
-         #cv2.waitKey()   
-        cv2.imwrite('getcount.jpeg', img)
-        print(len(listOrder))
+        # cv2.imshow('oi',img)
+        # cv2.waitKey()
+        self.test_number += 1   
+        cv2.imwrite('ProvasCorrigidas/getcount'+str(self.test_number)+'.jpeg', img)
+        # print(len(listOrder))
         return listRA, listOrder
 
     #método da construtora
     def __init__(self, contours, align_image):
         #pega o vetor de respostas do gabarito
+        self.test_number = 0
         _,self.gabarito = self.get_answers(contours, align_image)
 
     #retorna um dicionário com as listas de respostas corretas e incorretas

@@ -5,6 +5,7 @@ class Image:
     # Função iniciadora da classe.
     def __init__(self, base):
         self.base = cv2.imread(base, cv2.IMREAD_COLOR)
+        self.base = self.resize(self.base)
         self.MAX_MATCHES = 5000
         self.GOOD_MATCH_PERCENT = 0.05
 
@@ -38,7 +39,7 @@ class Image:
 
         # Draw top matches
         imMatches = cv2.drawMatches(im1Gray, keypoints1, im2Gray, keypoints2, matches, None)
-        cv2.imwrite("matches.jpeg", imMatches)
+        # cv2.imwrite("matches.jpeg", imMatches)
         
         # Extract location of good matches
         points1 = np.zeros((len(matches), 2), dtype=np.float32)
@@ -60,11 +61,12 @@ class Image:
 
     #Função para determinar os contornos do gabarito
     def get_contours(self, aligned_image):
-        blurred = cv2.pyrMeanShiftFiltering(aligned_image,1,100)
+        blurred = cv2.pyrMeanShiftFiltering(aligned_image,10,150)
         gray = cv2.cvtColor(blurred,cv2.COLOR_BGR2GRAY)
         ret, threshold = cv2.threshold(gray,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
         contours,_ = cv2.findContours(threshold,cv2.RETR_LIST,cv2.CHAIN_APPROX_NONE)
-        #cv2.imshow('aff', blurred)
+        # cv2.imshow('aff', blurred)
+        # cv2.waitKey()
         #itKey()
         cv2.imwrite('ImBlurr.jpeg', blurred)
         
@@ -78,5 +80,6 @@ class Image:
         dim = (width, height)
         resized = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
         #cv2.imwrite('ProvaR.jpeg', resized)
+
         return resized   
 

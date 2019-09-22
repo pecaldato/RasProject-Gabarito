@@ -7,15 +7,12 @@ from respostas import Respostas
 
 
 def main ():
-    base_gabarito_path = "base.jpg"
-    gabarito_path = "9.jpeg"
+    base_gabarito_path = "baseLoca.jpeg"
+    gabarito_path = "gabaritoNovo.jpeg"
     
     img = Image(base_gabarito_path)
     gabarito_image = img.loadImage(gabarito_path)
     gabarito_image = img.resize(gabarito_image)  
-    # print(gabarito_image.shape)
-    # cv2.imshow('img', gabarito_image)
-    # cv2.waitKey(0)
     # cv2.destroyAllWindows()
     align_image = img.align_image(gabarito_image)
     contours = img.get_contours(align_image)
@@ -24,13 +21,17 @@ def main ():
 
     files = []
     for (dirpath, dirnames, test_path) in walk("ProvasParaCorrigir"):
-        gabarito_image = img.loadImage(gabarito_path)
-        align_image = img.align_image(gabarito_image)
-        contours = img.get_contours(align_image)
-        ra, checked_answers = resp.get_answers(contours, align_image)
-        correct_answers = resp.compare_answers(checked_answers)
-        print(correct_answers)
-        #print(ra)
+        for test in test_path:
+            print(test)
+            gabarito_image = img.loadImage("ProvasParaCorrigir/"+test)
+            align_image = img.align_image(gabarito_image)
+            gabarito_image = img.resize(gabarito_image)  
+            contours = img.get_contours(align_image)
+            ra, checked_answers = resp.get_answers(contours, align_image)
+            correct_answers = resp.compare_answers(checked_answers)
+            print(correct_answers)
+            print("\n")
+            #print(ra)
 
 
 
