@@ -34,7 +34,7 @@ class Respostas:
                 # calculate x,y coordinate of center
                 cX = int(M["m10"] / M["m00"])
                 cY = int(M["m01"] / M["m00"])
-                cv2.drawContours(img, c, -1, (0,255,0), 3)
+                #cv2.drawContours(img, c, -1, (0,255,0), 3)
 
                 #Compare the central point to the Xo value of every letter and question number
                 if(cX<=760 or cY>=625):
@@ -65,7 +65,7 @@ class Respostas:
 
                                     listRet.append(letra)
                                     listNumbers.append(numero)
-                                    cv2.putText(img, numero+' '+letra, (cX - 25, cY),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
+                                    cv2.putText(img, numero+' '+letra, (cX - 25, cY),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
                                     cv2.drawContours(img, c, -1, (0,255,0), 1)
                 
                 
@@ -74,7 +74,7 @@ class Respostas:
                         for j in range(0,4):
                             if(cY >= RAy[j][0] and cY <= RAy[j][1]):
                                 listRA.append(str(x))
-                                cv2.putText(img, str(x), (cX - 25, cY),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
+                                cv2.putText(img, str(x), (cX - 25, cY),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
                                 cv2.drawContours(img, c, -1, (0,255,0), 1)
 
         #print(listRet)

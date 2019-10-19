@@ -8,6 +8,7 @@ class Image:
         self.base = self.resize(self.base)
         self.MAX_MATCHES = 5000
         self.GOOD_MATCH_PERCENT = 0.05
+        self.test_number = 0
 
     #Função para carregar a imagem
     def loadImage(self, gabaritoPath):
@@ -61,14 +62,16 @@ class Image:
 
     #Função para determinar os contornos do gabarito
     def get_contours(self, aligned_image):
-        blurred = cv2.pyrMeanShiftFiltering(aligned_image,10,150)
+        blurred = cv2.pyrMeanShiftFiltering(aligned_image,10,125)
         gray = cv2.cvtColor(blurred,cv2.COLOR_BGR2GRAY)
         ret, threshold = cv2.threshold(gray,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
         contours,_ = cv2.findContours(threshold,cv2.RETR_LIST,cv2.CHAIN_APPROX_NONE)
         # cv2.imshow('aff', blurred)
         # cv2.waitKey()
         #itKey()
-        cv2.imwrite('ImBlurr.jpeg', blurred)
+        #cv2.imwrite('ImBlurr.jpeg', blurred)
+        self.test_number += 1 
+        cv2.imwrite('ProvasCorrigidasBlurr/blurred'+str(self.test_number)+'.jpeg', blurred)
         
         
         return contours
