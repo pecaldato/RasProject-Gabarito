@@ -37,7 +37,7 @@ class Respostas:
                 #cv2.drawContours(img, c, -1, (0,255,0), 3)
 
                 #Compare the central point to the Xo value of every letter and question number
-                if(cX<=760 or cY>=625):
+                if(cX<=404 or cY>=438):
                     for x in range(0, 20):
                         if (cX >= ListX[x][0] and cX <= ListX[x][1]):
                             for j in range(0, 26):
@@ -69,13 +69,16 @@ class Respostas:
                                     cv2.drawContours(img, c, -1, (0,255,0), 1)
                 
                 
-                for x in range(0,10):
-                    if(cX >= RAx[x][0] and cX <= RAx[x][1]):
-                        for j in range(0,4):
-                            if(cY >= RAy[j][0] and cY <= RAy[j][1]):
-                                listRA.append(str(x))
-                                cv2.putText(img, str(x), (cX - 25, cY),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
-                                cv2.drawContours(img, c, -1, (0,255,0), 1)
+                else:
+                    for x in range(0,10):
+                        if(cX >= RAx[x][0] and cX <= RAx[x][1]):
+                            for j in range(0,4):
+                                if(cY >= RAy[j][0] and cY <= RAy[j][1]):
+                                    cv2.circle(img, (cX, cY), 0, (0, 255, 0), -15)
+                                    listRA.append(str(x))
+
+                                    cv2.putText(img, str(x), (cX - 25, cY),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+                                    cv2.drawContours(img, c, -1, (0,255,0), 1)
 
         #print(listRet)
         #print(listRA)
@@ -111,8 +114,12 @@ class Respostas:
                     break
             x = ctd
             listOrder.append(aux)
+
+        #coloca o número do RA na ordem certa
+        listRA.reverse()
         
-        listRA = listRA.reverse()  
+        #mescla a lista em uma única string para ser adicionada à planilha
+        listRA = ''.join(map(str, listRA))
 
         # cv2.imshow('oi',img)
         # cv2.waitKey()
@@ -137,5 +144,5 @@ class Respostas:
                 wrongAnswers.append([str(x+1), respostas[x]])
             else:
                 correctAnswers.append([str(x+1), respostas[x]])
-        Answers = {'correctAnswers': correctAnswers, 'wrongAnswers:': wrongAnswers}
+        Answers = {'correctAnswers': correctAnswers, 'wrongAnswers': wrongAnswers}
         return Answers
