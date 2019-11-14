@@ -1,9 +1,11 @@
 import cv2
 import numpy as np
+import xlsxwriter
 from os import walk
 import os     
 from Image import Image
 from respostas import Respostas
+from planilha import Planilha
 
 
 def main ():
@@ -18,7 +20,7 @@ def main ():
     contours = img.get_contours(align_image)
 
     resp = Respostas(contours, align_image)
-
+    plan = Planilha()
     files = []
     for (dirpath, dirnames, test_path) in walk("ProvasParaCorrigir"):
         for test in test_path:
@@ -29,9 +31,12 @@ def main ():
             contours = img.get_contours(align_image)
             ra, checked_answers = resp.get_answers(contours, align_image)
             correct_answers = resp.compare_answers(checked_answers)
+
+            plan.write(ra, checked_answers, correct_answers)
             #print(correct_answers)
             #print("\n")
-            #print(ra)
+    plan.closePlan()
+
 
 
 
