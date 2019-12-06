@@ -26,7 +26,7 @@ class Respostas:
         for c in contours:
             #Only takes the central point of contours who have 100<Area<350
             i += 1
-            if (10<cv2.contourArea(c)<200):
+            if (30<cv2.contourArea(c)<125):
                 # calculate moments for each contour
                 M = cv2.moments(c)
                 
@@ -65,8 +65,8 @@ class Respostas:
 
                                     listRet.append(letra)
                                     listNumbers.append(numero)
-                                    cv2.putText(img, numero+' '+letra, (cX - 25, cY),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
-                                    cv2.drawContours(img, c, -1, (0,255,0), 1)
+                                    cv2.putText(img, numero+' '+letra, (cX - 25, cY),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
+                                    cv2.drawContours(img, c, -1, (0,0,255), 2)
                 
                 
                 else:
