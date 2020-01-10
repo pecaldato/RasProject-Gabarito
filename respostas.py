@@ -126,7 +126,7 @@ class Respostas:
         # cv2.imshow('oi',img)
         # cv2.waitKey()
         self.test_number += 1   
-        cv2.imwrite('ProvasCorrigidas/getcount'+str(self.test_number)+'.jpeg', img)
+        #cv2.imwrite('ProvasCorrigidas/getcount'+str(self.test_number)+'.jpeg', img)
         # print(len(listOrder))
         return listRA, listOrder
 
@@ -140,7 +140,7 @@ class Respostas:
                              "Verifique se há o mínimo de 50 respostas e se as mesmas estão bem assinaladas!")
 
     #retorna um dicionário com as listas de respostas corretas e incorretas
-    def compare_answers(self, respostas):
+    def compare_answers(self, respostas, img10):
         if (respostas is None or len(respostas) < 50):
             raise Exception("Erro ao comparar as respostas da prova com o gabarito!\n"+
                             "Este erro ocorre quando as respostas encontradas de determinada prova "+
@@ -155,5 +155,9 @@ class Respostas:
             else:
                 correctAnswers.append([str(x+1), respostas[x]])
         Answers = {'correctAnswers': correctAnswers, 'wrongAnswers': wrongAnswers}
+
+       #adiciona o número de acertos na folha de questões
+        cv2.putText(img10, str(len(correctAnswers)), (609,230),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 255), 1)
+        cv2.imwrite('ProvasCorrigidas/getcount'+str(self.test_number)+'.jpeg', img10)
 
         return Answers
