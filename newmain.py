@@ -9,7 +9,7 @@ from planilha import Planilha
 
 
 def main ():
-    base_gabarito_path = "baseLoca.jpeg"
+    base_gabarito_path = "base_prova.jpeg"
     gabarito_path = "gabaritoNovo.jpeg"
     
     img = Image(base_gabarito_path)

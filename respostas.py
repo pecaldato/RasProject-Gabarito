@@ -4,7 +4,12 @@ import numpy as np
 
 class Respostas:
     #retorna lista de RA e respostas, baseado no parâmetro "contours"
-    def get_answers(self, contours, img, x, y):
+    def get_answers(self, contours, img):
+        if (contours is None):
+            raise Exception("Os contornos da imagem para achar as respostas são nulos.")
+        if (img is None):
+            raise Exception("A imagem fornecida ao get_answers é nula")
+
         #define os ranges que serão utilizados para localizar as questões/respostas
         ListX = [[100, 106], [121, 128], [143, 148], [163, 168], [183, 189], [247, 253],[268, 273], [288, 293], [308, 313], [328, 336], [392, 398], [413, 419], [434, 440], [455, 461], [476, 482], [539, 545], [560, 566], [581, 587], [602, 608], [623, 629]]
         ListY = [[479, 492], [507, 517], [532, 543], [558, 569], [584, 595], [610, 621],[636, 646], [661, 672], [687, 698], [713, 725], [740, 750], [765, 775], [816, 828], [843, 854], [869, 879], [894, 906], [921, 931], [946, 956], [971, 982], [997, 1008], [1023, 1034], [1049, 1060], [1075, 1085], [1100, 1112], [1127, 1138], [1153, 1164]]
@@ -129,10 +134,18 @@ class Respostas:
     def __init__(self, contours, align_image):
         #pega o vetor de respostas do gabarito
         self.test_number = 0
-        _,self.gabarito = self.get_answers(contours, align_image, 4,4)
+        _,self.gabarito = self.get_answers(contours, align_image)
+        if (self.gabarito is None or len(self.gabarito) < 50):
+            raise Exception("Erro ao obter as respostas do gabarito.\n"+
+                             "Verifique se há o mínimo de 50 respostas e se as mesmas estão bem assinaladas!")
 
     #retorna um dicionário com as listas de respostas corretas e incorretas
     def compare_answers(self, respostas):
+        if (respostas is None or len(respostas) < 50):
+            raise Exception("Erro ao comparar as respostas da prova com o gabarito!\n"+
+                            "Este erro ocorre quando as respostas encontradas de determinada prova "+
+                            "não estão de acordo com o número minimo de respostas aceitadas (50)."+
+                            "Verifique a qualidade da imagem e do scaneamento!")
         
         wrongAnswers = []
         correctAnswers = []
@@ -142,4 +155,5 @@ class Respostas:
             else:
                 correctAnswers.append([str(x+1), respostas[x]])
         Answers = {'correctAnswers': correctAnswers, 'wrongAnswers': wrongAnswers}
+
         return Answers
