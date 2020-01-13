@@ -5,10 +5,14 @@ import numpy as np
 class Respostas:
     #retorna lista de RA e respostas, baseado no parâmetro "contours"
     def get_answers(self, contours, img):
+        tipo = 0
         if (contours is None):
             raise Exception("Os contornos da imagem para achar as respostas são nulos.")
         if (img is None):
-            raise Exception("A imagem fornecida ao get_answers é nula")
+            raise Exception("A imagem fornecida ao get_answers é nula.")
+
+        tipoX = [[172,179], [193,199]]
+        tipoY = [[327, 335]]
 
         #define os ranges que serão utilizados para localizar as questões/respostas
         ListX = [[100, 106], [121, 128], [143, 148], [163, 168], [183, 189], [247, 253],[268, 273], [288, 293], [308, 313], [328, 336], [392, 398], [413, 419], [434, 440], [455, 461], [476, 482], [539, 545], [560, 566], [581, 587], [602, 608], [623, 629]]
@@ -16,8 +20,6 @@ class Respostas:
         #define os ranges que serão utilizados para localizar o RA
         RAx = [[454, 465], [474, 485], [494, 506], [515, 526], [535, 547], [556, 568],[577, 588], [597, 609], [618, 629], [638, 650]]
         RAy = [[324, 338], [351, 363], [376, 389], [402, 415]]
-
-
 
         listRet = []
         listNumbers = []
@@ -37,50 +39,112 @@ class Respostas:
                 cX = int(M["m10"] / M["m00"])
                 cY = int(M["m01"] / M["m00"])
                 #cv2.drawContours(img, c, -1, (0,255,0), 3)
+                if (166<cX<207 and 318<cY<344):
+                    for x in range(0,2):
+                        if (cX >= tipoX[x][0] and cX <= tipoX[x][1]):
+                            if (cY >= tipoY[0][0] and cY <= tipoY[0][1]):
+                                cv2.drawContours(img, c, -1, (0,0,255), 2)
+                                if (x==0):
+                                    tipo = 50
+                                if (x==1):
+                                    tipo = 90
+
+        for c in contours:
+            #Only takes the central point of contours who have 100<Area<350
+            i += 1
+            if (30<cv2.contourArea(c)<125):
+                # calculate moments for each contour
+                M = cv2.moments(c)
+                
+ 
+                # calculate x,y coordinate of center
+                cX = int(M["m10"] / M["m00"])
+                cY = int(M["m01"] / M["m00"])
 
                 #Compare the central point to the Xo value of every letter and question number
-                if(cX<=404 or cY>=438):
-                    for x in range(0, 20):
-                        if (cX >= ListX[x][0] and cX <= ListX[x][1]):
-                            for j in range(0, 26):
-                                if (cY >= ListY[j][0] and cY <= ListY[j][1]):
-                                    cv2.circle(img, (cX, cY), 0, (0, 255, 0), -15)
-                                    if (x==0 or x==5 or x==10 or x==15):
-                                        letra = "A"
-                                    elif (x==1 or x==6 or x==11 or x==16):
-                                        letra = "B"
-                                    elif (x==2 or x==7 or x==12 or x==17):
-                                        letra = "C"
-                                    elif (x==3 or x==8 or x==13 or x==18):
-                                        letra = "D"
-                                    elif (x==4 or x==9 or x==14 or x==19):
-                                        letra = "E"  
+                if (tipo==50):
+                    if((cX<213 and cY>440) or (213<cX<358 and 440<cY<1119)):
+                        for x in range(0, 10):
+                            if (cX >= ListX[x][0] and cX <= ListX[x][1]):
+                                for j in range(0, 26):
+                                    if (cY >= ListY[j][0] and cY <= ListY[j][1]):
+                                        cv2.circle(img, (cX, cY), 0, (0, 255, 0), -15)
+                                        if (x==0 or x==5 or x==10 or x==15):
+                                            letra = "A"
+                                        elif (x==1 or x==6 or x==11 or x==16):
+                                            letra = "B"
+                                        elif (x==2 or x==7 or x==12 or x==17):
+                                            letra = "C"
+                                        elif (x==3 or x==8 or x==13 or x==18):
+                                            letra = "D"
+                                        elif (x==4 or x==9 or x==14 or x==19):
+                                            letra = "E"  
 
-                                    if (cX >= ListX[0][0] and cX <= ListX[4][1]):
-                                        numero = str(j + 1)
-                                    elif (cX >= ListX[5][0] and cX <= ListX[9][1]):
-                                        numero = str(j + 27)
-                                    elif (cX >= ListX[10][0] and cX <= ListX[14][1]):
-                                        numero = str(j + 53)
-                                    elif (cX >= ListX[15][0] and cX <= ListX[19][1]):  
-                                        numero = str(j + 79)            
+                                        if (cX >= ListX[0][0] and cX <= ListX[4][1]):
+                                            numero = str(j + 1)
+                                        elif (cX >= ListX[5][0] and cX <= ListX[9][1]):
+                                            numero = str(j + 27)
+                                        elif (cX >= ListX[10][0] and cX <= ListX[14][1]):
+                                            numero = str(j + 53)
+                                        elif (cX >= ListX[15][0] and cX <= ListX[19][1]):  
+                                            numero = str(j + 79)            
 
-                                    listRet.append(letra)
-                                    listNumbers.append(numero)
-                                    cv2.putText(img, numero+' '+letra, (cX - 25, cY),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
-                                    cv2.drawContours(img, c, -1, (0,0,255), 2)
-                
-                
-                else:
-                    for x in range(0,10):
-                        if(cX >= RAx[x][0] and cX <= RAx[x][1]):
-                            for j in range(0,4):
-                                if(cY >= RAy[j][0] and cY <= RAy[j][1]):
-                                    cv2.circle(img, (cX, cY), 0, (0, 255, 0), -15)
-                                    listRA.append(str(x))
+                                        listRet.append(letra)
+                                        listNumbers.append(numero)
+                                        cv2.putText(img, numero+' '+letra, (cX - 25, cY),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
+                                        cv2.drawContours(img, c, -1, (0,0,255), 2)
+                    if(448<cX<655 and 316<cY<420):
+                        for x in range(0,10):
+                            if(cX >= RAx[x][0] and cX <= RAx[x][1]):
+                                for j in range(0,4):
+                                    if(cY >= RAy[j][0] and cY <= RAy[j][1]):
+                                        cv2.circle(img, (cX, cY), 0, (0, 255, 0), -15)
+                                        listRA.append(str(x))
+
+                                        cv2.putText(img, str(x), (cX - 25, cY),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+                                        cv2.drawContours(img, c, -1, (0,255,0), 1)
+
+                if (tipo==90):
+                    if(cY>440):
+                        for x in range(0, 20):
+                            if (cX >= ListX[x][0] and cX <= ListX[x][1]):
+                                for j in range(0, 26):
+                                    if (cY >= ListY[j][0] and cY <= ListY[j][1]):
+                                        cv2.circle(img, (cX, cY), 0, (0, 255, 0), -15)
+                                        if (x==0 or x==5 or x==10 or x==15):
+                                            letra = "A"
+                                        elif (x==1 or x==6 or x==11 or x==16):
+                                            letra = "B"
+                                        elif (x==2 or x==7 or x==12 or x==17):
+                                            letra = "C"
+                                        elif (x==3 or x==8 or x==13 or x==18):
+                                            letra = "D"
+                                        elif (x==4 or x==9 or x==14 or x==19):
+                                            letra = "E"  
+
+                                        if (cX >= ListX[0][0] and cX <= ListX[4][1]):
+                                            numero = str(j + 1)
+                                        elif (cX >= ListX[5][0] and cX <= ListX[9][1]):
+                                            numero = str(j + 27)
+                                        elif (cX >= ListX[10][0] and cX <= ListX[14][1]):
+                                            numero = str(j + 53)
+                                        elif (cX >= ListX[15][0] and cX <= ListX[19][1]):  
+                                            numero = str(j + 79)            
+
+                                        listRet.append(letra)
+                                        listNumbers.append(numero)
+                                        cv2.putText(img, numero+' '+letra, (cX - 25, cY),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
+                                        cv2.drawContours(img, c, -1, (0,0,255), 2)
+                    if(448<cX<655 and 316<cY<420):
+                        for x in range(0,10):
+                            if(cX >= RAx[x][0] and cX <= RAx[x][1]):
+                                for j in range(0,4):
+                                    if(cY >= RAy[j][0] and cY <= RAy[j][1]):
+                                        cv2.circle(img, (cX, cY), 0, (0, 255, 0), -15)
+                                        listRA.append(str(x))
 
                                     cv2.putText(img, str(x), (cX - 25, cY),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
-                                    cv2.drawContours(img, c, -1, (0,255,0), 1)
+                                    cv2.drawContours(img, c, -1, (0,255,0), 1)                                       
 
         #print(listRet)
         #print(listRA)
@@ -128,6 +192,7 @@ class Respostas:
         self.test_number += 1   
         #cv2.imwrite('ProvasCorrigidas/getcount'+str(self.test_number)+'.jpeg', img)
         # print(len(listOrder))
+        print(tipo)
         return listRA, listOrder
 
     #método da construtora
