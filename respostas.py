@@ -49,13 +49,19 @@ class Respostas:
                                 if (x==1):
                                     tipo = 90
 
+        if (tipo == 0):
+            msg = "Tipo de prova nao assinalada! Considerando 50 questoes!"
+            cv2.putText(img, msg, (55, 275),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+            tipo = 50
+
         for c in contours:
             #Only takes the central point of contours who have 100<Area<350
             i += 1
             if (30<cv2.contourArea(c)<125):
                 # calculate moments for each contour
                 M = cv2.moments(c)
-                
+
+                # cv2.drawContours(img, c, -1, (0,255,0), 2)
  
                 # calculate x,y coordinate of center
                 cX = int(M["m10"] / M["m00"])
@@ -91,20 +97,9 @@ class Respostas:
 
                                         listRet.append(letra)
                                         listNumbers.append(numero)
-                                        cv2.putText(img, numero+' '+letra, (cX - 25, cY),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
-                                        cv2.drawContours(img, c, -1, (0,0,255), 2)
-                    if(448<cX<655 and 316<cY<420):
-                        for x in range(0,10):
-                            if(cX >= RAx[x][0] and cX <= RAx[x][1]):
-                                for j in range(0,4):
-                                    if(cY >= RAy[j][0] and cY <= RAy[j][1]):
-                                        cv2.circle(img, (cX, cY), 0, (0, 255, 0), -15)
-                                        listRA.append(str(x))
-
-                                        cv2.putText(img, str(x), (cX - 25, cY),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
-                                        cv2.drawContours(img, c, -1, (0,255,0), 1)
-
-                if (tipo==90):
+                                        cv2.putText(img, numero+' '+letra, (cX - 25, cY),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
+                                        cv2.drawContours(img, c, -1, (0,255,0), 2)
+                elif (tipo==90):
                     if(cY>440):
                         for x in range(0, 20):
                             if (cX >= ListX[x][0] and cX <= ListX[x][1]):
@@ -133,22 +128,21 @@ class Respostas:
 
                                         listRet.append(letra)
                                         listNumbers.append(numero)
-                                        cv2.putText(img, numero+' '+letra, (cX - 25, cY),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
-                                        cv2.drawContours(img, c, -1, (0,0,255), 2)
-                    if(448<cX<655 and 316<cY<420):
-                        for x in range(0,10):
-                            if(cX >= RAx[x][0] and cX <= RAx[x][1]):
-                                for j in range(0,4):
-                                    if(cY >= RAy[j][0] and cY <= RAy[j][1]):
-                                        cv2.circle(img, (cX, cY), 0, (0, 255, 0), -15)
-                                        listRA.append(str(x))
+                                        cv2.putText(img, numero+' '+letra, (cX - 25, cY),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
+                                        cv2.drawContours(img, c, -1, (0,255,0), 2)
+                
+                #Pega o RA do aluno
+                if(448<cX<655 and 316<cY<420):
+                    for x in range(0,10):
+                        if(cX >= RAx[x][0] and cX <= RAx[x][1]):
+                            for j in range(0,4):
+                                if(cY >= RAy[j][0] and cY <= RAy[j][1]):
+                                    cv2.circle(img, (cX, cY), 0, (0, 255, 0), -15)
+                                    listRA.append(str(x))
 
-                                    cv2.putText(img, str(x), (cX - 25, cY),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
-                                    cv2.drawContours(img, c, -1, (0,255,0), 1)                                       
-
-        #print(listRet)
-        #print(listRA)
-        #print(listNumbers)
+                                cv2.putText(img, str(x), (cX - 25, cY),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+                                cv2.drawContours(img, c, -1, (0,255,0), 1)                                       
+ 
         for x in range(0,len(listNumbers)-1):
             for j in range(x,len(listNumbers)):
                 if (int(listNumbers[x]) >= int(listNumbers[j])):
@@ -205,7 +199,7 @@ class Respostas:
                              "Verifique se há o mínimo de 50 respostas e se as mesmas estão bem assinaladas!")
 
     #retorna um dicionário com as listas de respostas corretas e incorretas
-    def compare_answers(self, respostas, img10):
+    def compare_answers(self, respostas, img10, name):
         if (respostas is None or len(respostas) < 50):
             raise Exception("Erro ao comparar as respostas da prova com o gabarito!\n"+
                             "Este erro ocorre quando as respostas encontradas de determinada prova "+
@@ -223,6 +217,7 @@ class Respostas:
 
        #adiciona o número de acertos na folha de questões
         cv2.putText(img10, str(len(correctAnswers)), (609,230),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 255), 1)
-        cv2.imwrite('ProvasCorrigidas/getcount'+str(self.test_number)+'.jpeg', img10)
+        # cv2.imwrite('ProvasCorrigidas/getcount'+str(self.test_number)+'.jpeg', img10)
+        cv2.imwrite('ProvasCorrigidas/'+name.split('.')[0]+'_corrigida.jpeg', img10)
 
         return Answers

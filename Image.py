@@ -46,7 +46,7 @@ class Image:
 
             # Draw top matches
             imMatches = cv2.drawMatches(im1Gray, keypoints1, im2Gray, keypoints2, matches, None)
-            # cv2.imwrite("matches.jpeg", imMatches)
+            # cv2.imwrite("matches/"+name+".jpeg", imMatches)
             
             # Extract location of good matches
             points1 = np.zeros((len(matches), 2), dtype=np.float32)
@@ -62,7 +62,7 @@ class Image:
             # Use homography
             height, width, channels = self.base.shape
             aligned_image = cv2.warpPerspective(gabarito_image, h, (width, height))
-            #cv2.imwrite('alinhada.jpeg', aligned_image)
+            # cv2.imwrite('alinhada/'+name+'.jpeg', aligned_image)
         except:
             raise Exception("Erro ao alinhar a imagem.")
             
@@ -87,7 +87,8 @@ class Image:
             #itKey()
             #cv2.imwrite('ImBlurr.jpeg', blurred)
             # self.test_number += 1 
-            # cv2.imwrite('ProvasCorrigidasBlurr/blurred'+str(self.test_number)+'.jpeg', blurred)
+            # cv2.drawContours(aligned_image, contours, -1, (0,0,255), 2)
+            # cv2.imwrite("contours/"+name+".jpeg", aligned_image)
         except:
             raise Exception("Erro ao achar os contornos da imagem.")        
         
