@@ -25,6 +25,8 @@ class Respostas:
         listNumbers = []
         listOrder = []
         listRA = []
+        self.listcx = []
+        self.listcy = []
         i=0
         
         for c in contours:
@@ -64,17 +66,17 @@ class Respostas:
                 # cv2.drawContours(img, c, -1, (0,255,0), 2)
  
                 # calculate x,y coordinate of center
-                cX = int(M["m10"] / M["m00"])
-                cY = int(M["m01"] / M["m00"])
+                self.cX = int(M["m10"] / M["m00"])
+                self.cY = int(M["m01"] / M["m00"])
 
                 #Compare the central point to the Xo value of every letter and question number
                 if (tipo==50):
-                    if((cX<213 and cY>440) or (213<cX<358 and 440<cY<1119)):
+                    if((self.cX<213 and self.cY>440) or (213<self.cX<358 and 440<self.cY<1119)):
                         for x in range(0, 10):
-                            if (cX >= ListX[x][0] and cX <= ListX[x][1]):
+                            if (self.cX >= ListX[x][0] and self.cX <= ListX[x][1]):
                                 for j in range(0, 26):
-                                    if (cY >= ListY[j][0] and cY <= ListY[j][1]):
-                                        cv2.circle(img, (cX, cY), 0, (0, 255, 0), -15)
+                                    if (self.cY >= ListY[j][0] and self.cY <= ListY[j][1]):
+                                        cv2.circle(img, (self.cX, self.cY), 0, (0, 255, 0), -15)
                                         if (x==0 or x==5 or x==10 or x==15):
                                             letra = "A"
                                         elif (x==1 or x==6 or x==11 or x==16):
@@ -86,26 +88,28 @@ class Respostas:
                                         elif (x==4 or x==9 or x==14 or x==19):
                                             letra = "E"  
 
-                                        if (cX >= ListX[0][0] and cX <= ListX[4][1]):
+                                        if (self.cX >= ListX[0][0] and self.cX <= ListX[4][1]):
                                             numero = str(j + 1)
-                                        elif (cX >= ListX[5][0] and cX <= ListX[9][1]):
+                                        elif (self.cX >= ListX[5][0] and self.cX <= ListX[9][1]):
                                             numero = str(j + 27)
-                                        elif (cX >= ListX[10][0] and cX <= ListX[14][1]):
+                                        elif (self.cX >= ListX[10][0] and self.cX <= ListX[14][1]):
                                             numero = str(j + 53)
-                                        elif (cX >= ListX[15][0] and cX <= ListX[19][1]):  
+                                        elif (self.cX >= ListX[15][0] and self.cX <= ListX[19][1]):  
                                             numero = str(j + 79)            
 
                                         listRet.append(letra)
                                         listNumbers.append(numero)
                                         cv2.putText(img, numero+' '+letra, (cX - 25, cY),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
                                         cv2.drawContours(img, c, -1, (0,255,0), 2)
+                                        self.listcx.append(self.cX)
+                                        self.listcy.append(self.cY)
                 elif (tipo==90):
-                    if(cY>440):
+                    if(self.cY>440):
                         for x in range(0, 20):
-                            if (cX >= ListX[x][0] and cX <= ListX[x][1]):
+                            if (self.cX >= ListX[x][0] and self.cX <= ListX[x][1]):
                                 for j in range(0, 26):
-                                    if (cY >= ListY[j][0] and cY <= ListY[j][1]):
-                                        cv2.circle(img, (cX, cY), 0, (0, 255, 0), -15)
+                                    if (self.cY >= ListY[j][0] and self.cY <= ListY[j][1]):
+                                        cv2.circle(img, (self.cX, self.cY), 0, (0, 255, 0), -15)
                                         if (x==0 or x==5 or x==10 or x==15):
                                             letra = "A"
                                         elif (x==1 or x==6 or x==11 or x==16):
@@ -117,27 +121,29 @@ class Respostas:
                                         elif (x==4 or x==9 or x==14 or x==19):
                                             letra = "E"  
 
-                                        if (cX >= ListX[0][0] and cX <= ListX[4][1]):
+                                        if (self.cX >= ListX[0][0] and self.cX <= ListX[4][1]):
                                             numero = str(j + 1)
-                                        elif (cX >= ListX[5][0] and cX <= ListX[9][1]):
+                                        elif (self.cX >= ListX[5][0] and self.cX <= ListX[9][1]):
                                             numero = str(j + 27)
-                                        elif (cX >= ListX[10][0] and cX <= ListX[14][1]):
+                                        elif (self.cX >= ListX[10][0] and self.cX <= ListX[14][1]):
                                             numero = str(j + 53)
-                                        elif (cX >= ListX[15][0] and cX <= ListX[19][1]):  
+                                        elif (self.cX >= ListX[15][0] and self.cX <= ListX[19][1]):  
                                             numero = str(j + 79)            
 
                                         listRet.append(letra)
                                         listNumbers.append(numero)
                                         cv2.putText(img, numero+' '+letra, (cX - 25, cY),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
                                         cv2.drawContours(img, c, -1, (0,255,0), 2)
+                                        self.listcx.append(self.cX)
+                                        self.listcy.append(self.cY)
                 
                 #Pega o RA do aluno
-                if(448<cX<655 and 316<cY<420):
+                if(448<self.cX<655 and 316<self.cY<420):
                     for x in range(0,10):
-                        if(cX >= RAx[x][0] and cX <= RAx[x][1]):
+                        if(self.cX >= RAx[x][0] and self.cX <= RAx[x][1]):
                             for j in range(0,4):
-                                if(cY >= RAy[j][0] and cY <= RAy[j][1]):
-                                    cv2.circle(img, (cX, cY), 0, (0, 255, 0), -15)
+                                if(self.cY >= RAy[j][0] and self.cY <= RAy[j][1]):
+                                    cv2.circle(img, (self.cX, self.cY), 0, (0, 255, 0), -15)
                                     listRA.append(str(x))
 
                                 cv2.putText(img, str(x), (cX - 25, cY),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
@@ -187,6 +193,59 @@ class Respostas:
         #cv2.imwrite('ProvasCorrigidas/getcount'+str(self.test_number)+'.jpeg', img)
         # print(len(listOrder))
         print(tipo)
+
+        #coloca a lista cx e cy na ordem
+        self.listcx.reverse()
+        self.listcy.reverse()
+        self.listccx = []
+        self.listccy = [485, 511, 536, 562, 588, 614, 640, 666, 691, 717, 743, 769, 821, 847, 873, 898, 924, 950, 976, 1002, 1028, 1054, 1079, 
+        1106, 1131, 1157, 485, 511, 536, 562, 588, 614, 640, 666, 691, 717, 743, 769, 821, 847, 873, 898, 924, 950, 976, 1002, 1028, 1054, 1079, 
+        1106, 1131, 1157, 485, 511, 536, 562, 588, 614, 640, 666, 691, 717, 743, 769, 821, 847, 873, 898, 924, 950, 976, 1002, 1028, 1054, 1079, 
+        1106, 1131, 1157, 485, 511, 536, 562, 588, 614, 640, 666, 691, 717, 743, 769]
+        cont = 0   
+        if (tipo==90):
+            while cont != 26:
+                for i in range(len(self.listcx)):
+                    if self.listcx[i] > 94 and self.listcx[i] < 196:
+                        self.listccx.append(self.listcx[i])
+                        cont += 1
+            cont = 0 
+            while cont != 26:
+                for i in range(len(self.listcx)):
+                    if self.listcx[i] > 239 and self.listcx[i] < 342:
+                        self.listccx.append(self.listcx[i])
+                        cont += 1
+            cont = 0  
+            while cont != 26:
+                for i in range(len(self.listcx)):
+                    if self.listcx[i] > 383 and self.listcx[i] < 488:
+                        self.listccx.append(self.listcx[i])
+                        cont += 1
+            cont = 0    
+            while cont != 12:
+                for i in range(len(self.listcx)):
+                    if self.listcx[i] > 531:
+                        self.listccx.append(self.listcx[i])
+                        cont += 1
+            cont = 0 
+        """if (tipo==50):
+            while cont != 26:
+                for i in range(len(self.listcx)):
+                    if self.listcx[i] > 94 and self.listcx[i] < 196:
+                        self.listccx.append(self.listcx[i])
+                        cont += 1
+            cont = 0 
+            while cont != 24:
+                for i in range(len(self.listcx)):
+                    if self.listcx[i] > 239 and self.listcx[i] < 342:
+                        self.listccx.append(self.listcx[i])
+                        cont += 1"""
+            
+        #print(self.listccx)
+        #print("-------------------------------------------------------")
+        #print(self.listcy)
+
+
         return listRA, listOrder
 
     #método da construtora
@@ -218,6 +277,15 @@ class Respostas:
        #adiciona o número de acertos na folha de questões
         cv2.putText(img10, str(len(correctAnswers)), (609,230),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 255), 1)
         # cv2.imwrite('ProvasCorrigidas/getcount'+str(self.test_number)+'.jpeg', img10)
+        cv2.imwrite('ProvasCorrigidas/'+name.split('.')[0]+'_corrigida.jpeg', img10)
+       
+       #pinta questões certas e erradas
+        for i in range(len(self.listcx)):
+            if respostas[i] != self.gabarito[i]:
+                cv2.rectangle(img10, (self.listccx[i]-8, self.listccy[i]- 6), (self.listccx[i]+8, self.listccy[i]+6), (0,0,255), -1)
+            else:
+                cv2.rectangle(img10, (self.listccx[i]-8, self.listccy[i]- 6), (self.listccx[i]+8, self.listccy[i]+6), (0,255,0), -1)
+        
         cv2.imwrite('ProvasCorrigidas/'+name.split('.')[0]+'_corrigida.jpeg', img10)
 
         return Answers
