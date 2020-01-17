@@ -1,5 +1,6 @@
 import xlsxwriter
 
+
 class Planilha:
     #método create, cria a planilha
     def create(self):
@@ -37,7 +38,7 @@ class Planilha:
         #escreve quantas questões o aluno acertou, quantas errou e a porcentagem
         self.worksheet.write(1, self.col, str(len(correctAnswers)),self.cell_format_right)
         self.worksheet.write(2, self.col, str(len(wrongAnswers)),self.cell_format_right)
-        self.worksheet.write(3, self.col, str(len(correctAnswers)*2)+"%",self.cell_format_right)
+        self.worksheet.write(3, self.col, str(round(len(correctAnswers)*100/(len(correctAnswers)+len(wrongAnswers)),2))+"%",self.cell_format_right)
         self.worksheet.set_column(self.col, self.col, 18, self.cell_format_right)
         row = 4
         x = 1
