@@ -134,6 +134,8 @@ class Respostas:
                                         listNumbers.append(numero)
                                         cv2.putText(img, numero+' '+letra, (cX - 25, cY),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
                                         cv2.drawContours(img, c, -1, (0,255,0), 2)
+                                        
+                                        
                                         self.listcx.append(self.cX)
                                         self.listcy.append(self.cY)
                 
@@ -192,7 +194,7 @@ class Respostas:
         self.test_number += 1   
         #cv2.imwrite('ProvasCorrigidas/getcount'+str(self.test_number)+'.jpeg', img)
         # print(len(listOrder))
-        print(tipo)
+        print('Tipo da prova:', tipo)
 
         #coloca a lista cx e cy na ordem
         self.listcx.reverse()
@@ -204,42 +206,56 @@ class Respostas:
         1106, 1131, 1157, 485, 511, 536, 562, 588, 614, 640, 666, 691, 717, 743, 769]
         cont = 0   
         if (tipo==90):
-            while cont != 26:
-                for i in range(len(self.listcx)):
-                    if self.listcx[i] > 94 and self.listcx[i] < 196:
-                        self.listccx.append(self.listcx[i])
-                        cont += 1
+            for i in range(len(self.listcx)):
+                if self.listcx[i] > 94 and self.listcx[i] < 196:
+                    self.listccx.append(self.listcx[i])
+                    cont += 1
+                    if cont == 26:
+                        i == len(self.listcx)
             cont = 0 
-            while cont != 26:
-                for i in range(len(self.listcx)):
-                    if self.listcx[i] > 239 and self.listcx[i] < 342:
-                        self.listccx.append(self.listcx[i])
-                        cont += 1
+            for i in range(len(self.listcx)):
+                if self.listcx[i] > 239 and self.listcx[i] < 342:
+                    self.listccx.append(self.listcx[i])
+                    cont += 1
+                    if cont == 26:
+                        i == len(self.listcx)
             cont = 0  
-            while cont != 26:
-                for i in range(len(self.listcx)):
-                    if self.listcx[i] > 383 and self.listcx[i] < 488:
-                        self.listccx.append(self.listcx[i])
-                        cont += 1
+            for i in range(len(self.listcx)):
+                if self.listcx[i] > 383 and self.listcx[i] < 488:
+                    self.listccx.append(self.listcx[i])
+                    cont += 1
+                    if cont == 26:
+                        i == len(self.listcx)
             cont = 0    
-            while cont != 12:
-                for i in range(len(self.listcx)):
-                    if self.listcx[i] > 531:
-                        self.listccx.append(self.listcx[i])
-                        cont += 1
-            cont = 0 
-        """if (tipo==50):
-            while cont != 26:
-                for i in range(len(self.listcx)):
-                    if self.listcx[i] > 94 and self.listcx[i] < 196:
-                        self.listccx.append(self.listcx[i])
-                        cont += 1
-            cont = 0 
-            while cont != 24:
-                for i in range(len(self.listcx)):
-                    if self.listcx[i] > 239 and self.listcx[i] < 342:
-                        self.listccx.append(self.listcx[i])
-                        cont += 1"""
+            for i in range(len(self.listcx)):
+                if self.listcx[i] > 531:
+                    self.listccx.append(self.listcx[i])
+                    cont += 1
+                    if cont == 12:
+                        i == len(self.listcx)
+
+        cont = 0 
+        if (tipo==50) and len(self.listcx) < 51:
+            #print(len(self.listcx))
+            #print(self.listcx)
+            for i in range(len(self.listcx)):
+                if self.listcx[i] > 94 and self.listcx[i] < 196:
+                    self.listccx.append(self.listcx[i])
+                    cont += 1
+                    #print(cont)
+                    if cont == 26:
+                        i == len(self.listcx)
+
+            cont = 0
+            for i in range(len(self.listcx)):
+                if self.listcx[i] > 240 and self.listcx[i] < 338:
+                    self.listccx.append(self.listcx[i])
+                    cont += 1
+                    #print(cont)
+                    if cont == 24:
+                        i == len(self.listcx)
+                        
+                        
             
         #print(self.listccx)
         #print("-------------------------------------------------------")
@@ -276,8 +292,8 @@ class Respostas:
 
        #adiciona o número de acertos na folha de questões
         cv2.putText(img10, str(len(correctAnswers)), (609,230),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 255), 1)
-        # cv2.imwrite('ProvasCorrigidas/getcount'+str(self.test_number)+'.jpeg', img10)
-        cv2.imwrite('ProvasCorrigidas/'+name.split('.')[0]+'_corrigida.jpeg', img10)
+        #cv2.imwrite('ProvasCorrigidas/'+name.split('.')[0]+'_corrigida.jpeg', img10)
+
        
        #pinta questões certas e erradas
         for i in range(len(self.listcx)):
