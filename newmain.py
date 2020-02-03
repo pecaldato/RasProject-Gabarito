@@ -6,6 +6,12 @@ import os
 from Image import Image
 from respostas import Respostas
 from planilha import Planilha
+from pdf import Pdf
+from collections import defaultdict
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import letter, inch
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
+
 
 
 def main ():
@@ -22,6 +28,7 @@ def main ():
 
     resp = Respostas(contours, align_image)
     plan = Planilha()
+    pdf = Pdf()
     files = []
     for (dirpath, dirnames, test_path) in walk("ProvasParaCorrigir"):
         for test in test_path:
@@ -35,11 +42,13 @@ def main ():
                 correct_answers = resp.compare_answers(checked_answers, align_image, test)
 
                 plan.write(ra, checked_answers, correct_answers)
+                pdf.read(ra, checked_answers, correct_answers)
                 #print(correct_answers)
                 #print("\n")
             except Exception as e:
                 print(str(e))
     plan.closePlan()
+    pdf.closePdf()
 
 
 
