@@ -31,7 +31,7 @@ class Respostas:
         for c in contours:
             #Only takes the central point of contours who have 100<Area<350
             i += 1
-            if (30<cv2.contourArea(c)<125):
+            if (10<cv2.contourArea(c)<125):
                 # calculate moments for each contour
                 M = cv2.moments(c)
                 
@@ -217,18 +217,21 @@ class Respostas:
         for x in range((len(respostas))):
             if (len(respostas[x][0]) > 2) or respostas[x][0] != self.gabarito[x][0]:
                 wrongAnswers.append(respostas[x][0])
+                # Circulo das respostas erradas
                 cv2.circle(img10, (respostas[x][1][0], respostas[x][1][1]), 5, (0,0,255),2)
-                #cv2.rectangle(img10, (respostas[x][1][0] -8, respostas[x][1][1] - 6), (respostas[x][1][0] +8, respostas[x][1][1] +6), (0,0,255), -1)
+
+                #circulo do gabarito
                 cv2.circle(img10, (self.gabarito[x][1][0], self.gabarito[x][1][1]), 5, (255,0,0),2)
                 if(len(respostas[x][1])>2):
                     for i in range(int(len(respostas[x][1])/2)):
+                        # circulo das respotas erradas
                         cv2.circle(img10, (respostas[x][1][2*i], respostas[x][1][2*1+1]), 5, (0,0,255),2)
-                        #cv2.rectangle(img10, (respostas[x][1][2*i] -8, respostas[x][1][2*1+1] - 6), (respostas[x][1][2*i] +8, respostas[x][1][2*1+1] +6), (0,0,255), -1)
 
             if(respostas[x][0] == self.gabarito[x][0]):
                 correctAnswers.append(respostas[x][0])
+                # Circulo das respostas corretas
                 cv2.circle(img10, (respostas[x][1][0], respostas[x][1][1]), 5, (0,255,0),2)
-                #cv2.rectangle(img10, (respostas[x][1][0] -8, respostas[x][1][1] - 6), (respostas[x][1][0]+8, respostas[x][1][1]+6), (0,255,0), -1)
+
         Answers = {'correctAnswers': correctAnswers, 'wrongAnswers': wrongAnswers}
 
         #legenda

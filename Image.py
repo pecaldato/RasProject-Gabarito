@@ -78,7 +78,7 @@ class Image:
             raise Exception("Imagem fornecida para achar os contornos é nula")
 
         try:
-            blurred = cv2.pyrMeanShiftFiltering(aligned_image,0,110)
+            blurred = cv2.pyrMeanShiftFiltering(aligned_image,2,100)
             gray = cv2.cvtColor(blurred,cv2.COLOR_BGR2GRAY)
             ret, threshold = cv2.threshold(gray,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
             contours,_ = cv2.findContours(threshold,cv2.RETR_LIST,cv2.CHAIN_APPROX_NONE)
