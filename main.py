@@ -146,7 +146,7 @@ class Application(tk.Frame):
                     align_test = self.img.align_image(test_image)
                     contours = self.img.get_contours(align_test)
                     ra, checked_answers = self.resp.get_answers(contours, align_test)
-                    correct_answers = self.resp.compare_answers(checked_answers, align_test, test)
+                    correct_answers = self.resp.compare_answers(checked_answers, align_test, test, ra)
 
                     self.plan.write(ra, checked_answers, correct_answers)
                     self.pdf.read(ra, checked_answers, correct_answers)
