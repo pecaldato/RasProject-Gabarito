@@ -1,0 +1,24 @@
+{
+    "main":
+        {
+            "move_tests": 1
+        },
+    "image":
+        {
+        "bluer":
+            {
+                "b1": 2,
+                "b2": 100
+            }
+        },
+    "respostas":
+        {
+        "size": 
+            {
+                "min": 30,
+                "max": 125
+            },
+        "show_gabarito_circles": 1
+        }
+    
+}

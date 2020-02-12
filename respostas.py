@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 from collections import defaultdict
+import json
  
 
 class Respostas:
@@ -58,7 +59,7 @@ class Respostas:
         for c in contours:
             #Only takes the central point of contours who have 100<Area<350
             i += 1
-            if (30<cv2.contourArea(c)<125):
+            if (self.json["size"]["min"]<cv2.contourArea(c)<self.json["size"]["max"]):
                 # calculate moments for each contour
                 M = cv2.moments(c)
 
@@ -192,11 +193,15 @@ class Respostas:
 
         return listRA, listCxCy
 
-
+    def open_config_file(self):
+        with open('configs.json') as json_file:
+            data = json.load(json_file)
+        self.json = data["respostas"]
 
 
     #método da construtora
     def __init__(self, contours, align_image):
+        self.open_config_file()
         #pega o vetor de respostas do gabarito
         self.test_number = 0
         _,self.gabarito = self.get_answers(contours, align_image)
@@ -220,8 +225,13 @@ class Respostas:
                 # Circulo das respostas erradas
                 cv2.circle(img10, (respostas[x][1][0], respostas[x][1][1]), 5, (0,0,255),2)
 
+                
                 #circulo do gabarito
-                cv2.circle(img10, (self.gabarito[x][1][0], self.gabarito[x][1][1]), 5, (255,0,0),2)
+                if (self.json["show_gabarito_circles"]):
+                    cv2.circle(img10, (self.gabarito[x][1][0], self.gabarito[x][1][1]), 5, (255,0,0),2)
+
+
+
                 if(len(respostas[x][1])>2):
                     for i in range(int(len(respostas[x][1])/2)):
                         # circulo das respotas erradas
@@ -237,15 +247,17 @@ class Respostas:
         #legenda
         cv2.circle(img10, (535, 1035), 6, (255,0,0),-1)
         cv2.putText(img10, 'Gabarito', (555,1040),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 2)
-        cv2.rectangle(img10, (527, 1057), (543, 1069), (0,255,0), -1)
+        cv2.circle(img10, (535, 1065), 6, (0,255,0),-1)
+        # cv2.rectangle(img10, (527, 1057), (543, 1069), (0,255,0), -1)
         cv2.putText(img10, 'Corretas', (555,1068),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 2)
-        cv2.rectangle(img10, (527, 1085), (543, 1097), (0,0,255), -1)
+        cv2.circle(img10, (535, 1090), 6, (0,0,255),-1)
+        # cv2.rectangle(img10, (527, 1085), (543, 1097), (0,0,255), -1)
         cv2.putText(img10, 'Incorretas', (555,1096),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 2)
 
 
        #adiciona o número de acertos na folha de questões
         cv2.putText(img10, str(len(correctAnswers)), (609,230),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 255), 1)
        #Salva a imagem
-        cv2.imwrite('ProvasCorrigidas/'+name.split('.')[0]+'_corrigida.jpeg', img10)
+        cv2.imwrite('ProvasCorrigidas/Resolucao/'+name.split('.')[0]+'_corrigida.jpeg', img10)
 
         return Answers

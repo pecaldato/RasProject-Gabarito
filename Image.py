@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import json
 
 class Image:
     # Função iniciadora da classe.
@@ -12,6 +13,13 @@ class Image:
         self.MAX_MATCHES = 5000
         self.GOOD_MATCH_PERCENT = 0.05
         self.test_number = 0
+        self.open_config_file()
+
+
+    def open_config_file(self):
+        with open('configs.json') as json_file:
+            data = json.load(json_file)
+        self.json = data["image"]["bluer"]
 
     #Função para carregar a imagem
     def loadImage(self, gabaritoPath):
@@ -78,7 +86,7 @@ class Image:
             raise Exception("Imagem fornecida para achar os contornos é nula")
 
         try:
-            blurred = cv2.pyrMeanShiftFiltering(aligned_image,2,100)
+            blurred = cv2.pyrMeanShiftFiltering(aligned_image,int(self.json["b1"]),int(self.json["b2"]))
             gray = cv2.cvtColor(blurred,cv2.COLOR_BGR2GRAY)
             ret, threshold = cv2.threshold(gray,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
             contours,_ = cv2.findContours(threshold,cv2.RETR_LIST,cv2.CHAIN_APPROX_NONE)
