@@ -71,7 +71,7 @@ class Application(tk.Frame):
         self.progressBar = Progressbar(self.master, length=547)
         self.progressBar.place(x=50, y= 200)
 
-        self.caixaTexto = scrolledtext.ScrolledText(self.master,width=76,height=10)
+        self.caixaTexto = scrolledtext.ScrolledText(self.master,width=66,height=10)
         self.caixaTexto.place(x=50, y= 250)
         self.caixaTexto.tag_config('error', foreground='red')
         self.caixaTexto.tag_config('done', foreground='green')
@@ -82,12 +82,12 @@ class Application(tk.Frame):
         self.master.config(menu=self.menu)
 
         try:
+            self.ras_logo = tk.PhotoImage(file="ras.png")
             self.canvas = tk.Canvas(self.master, width = 400, height = 136)  
             self.canvas.pack()  
-            self.ras_logo = tk.PhotoImage(file="ras.png")
             self.canvas.create_image(0, 0, anchor=tk.NW, image=self.ras_logo) 
-            self.canvas.place(x=130,y=400)
-        except:
+            self.canvas.place(x=130,y=440)
+        except Exception as e:
             pass
 
         # self.quit = tk.Button(self, text="QUIT", fg="red",
