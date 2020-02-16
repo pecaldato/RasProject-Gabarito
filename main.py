@@ -145,11 +145,8 @@ class Application(tk.Frame):
                     print(test)
                     test_image = self.img.loadImage("ProvasParaCorrigir/"+test)
                     test_image = self.img.resize(test_image)  
-                    print("resize")
                     align_test = self.img.align_image(test_image)
-                    print("align")
-                    contours = self.img.get_contours(align_test,)
-                    print("get_countor")
+                    contours = self.img.get_contours(align_test)
                     ra, checked_answers = self.resp.get_answers(contours, align_test, test)
                     correct_answers = self.resp.compare_answers(checked_answers, align_test, test, ra)
 
@@ -159,7 +156,7 @@ class Application(tk.Frame):
                     #print("\n")
 
                     ra = str(ra[:])
-                    self.img.save_bluer(ra)
+                    # self.img.save_bluer(ra)
                     if(self.json["move_tests"]):
                         shutil.move("ProvasParaCorrigir/"+test, "ProvasCorrigidas/"+ra+".png") 
 

@@ -103,7 +103,7 @@ class Respostas:
                                             listCxCy.append([[int(numero), letra], [cX, cY]])
                                             aux.append(numero)
                                         #cv2.putText(img, numero+' '+letra, (cX - 25, cY),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
-                                        cv2.drawContours(img, c, -1, (0,255,0), 2)
+                                        # cv2.drawContours(img, c, -1, (0,255,0), 2)
 
                 elif (tipo==90):
                     if(cY>440):
@@ -168,8 +168,8 @@ class Respostas:
         #ordena a lista
         listCxCy = sorted(listCxCy)
         
-
-
+        if (len(listCxCy) < 50):
+            raise Exception("O programa não encontrou todas as alternativas da prova "+test+". Isso ocorre caso o aluno tenha deixado de marcar alguma alternativa ou por erro de alinhamento. Verifique a qualidade do scan!")
         #adiciona "-" as questões sem alternativa
         for x in range(tipo):
             if (listCxCy[x][0][0] != x+1):
@@ -204,12 +204,7 @@ class Respostas:
         self.open_config_file()
         #pega o vetor de respostas do gabarito
         self.test_number = 0
-        print(align_image)
-        print("contours ",len(contours))
-        # if(np.max(align_image) == 0):
-        print(np.max(align_image))
         _,self.gabarito = self.get_answers(contours, align_image, "gabarito")
-        print("saiu")
         if (self.gabarito is None or len(self.gabarito) < 50):
             raise Exception("Erro ao obter as respostas do gabarito.\n"+
                              "Verifique se há o mínimo de 50 respostas e se as mesmas estão bem assinaladas!")

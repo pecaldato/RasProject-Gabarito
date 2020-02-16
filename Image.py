@@ -107,9 +107,9 @@ class Image:
         
         return contours
 
-    def save_bluer(self,test):
-        cv2.imwrite('bluer/'+test+'.png', self.bluer)
-        cv2.imwrite('matchs/'+test+'.png', self.matchs)
+    # def save_bluer(self,test):
+    #     cv2.imwrite('bluer/'+test+'.png', self.bluer)
+    #     cv2.imwrite('matchs/'+test+'.png', self.matchs)
 
 
     #Redimenciona a imagem para ficar no tamanho adequado
