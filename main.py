@@ -101,7 +101,7 @@ class Application(tk.Frame):
         try:
             self.caixaTexto.delete(1.0,tk.END)
 
-            base_gabarito_path = "base_gabarito_nova.jpg"
+            base_gabarito_path = "base_prova_nova.jpg"
             self.img = Image(base_gabarito_path)
 
             file_path = self.master.filename =  tk.filedialog.askopenfilename(initialdir = os.path.dirname(__file__),title = "Select file",filetypes = 

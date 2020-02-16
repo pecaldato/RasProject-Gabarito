@@ -23,7 +23,7 @@
                 "min": 30,
                 "max": 140
             },
-        "show_gabarito_circles": 0
+        "show_gabarito_circles": 1
         }
     
 }
