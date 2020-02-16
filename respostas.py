@@ -6,12 +6,12 @@ import json
 
 class Respostas:
     #retorna lista de RA e respostas, baseado no parâmetro "contours"
-    def get_answers(self, contours, img):
+    def get_answers(self, contours, img, test):
         tipo = 0
-        if (contours is None):
-            raise Exception("Os contornos da imagem para achar as respostas são nulos.")
+        if (contours is None or len(contours) == 0):
+            raise Exception("Os contornos da imagem "+test+" para achar as respostas são nulos.")
         if (img is None):
-            raise Exception("A imagem fornecida ao get_answers é nula.")
+            raise Exception("A imagem "+test+" fornecida ao get_answers é nula.")
 
         tipoX = [[172,179], [193,199]]
         tipoY = [[327, 335]]
@@ -161,16 +161,13 @@ class Respostas:
         #mescla a lista em uma única string para ser adicionada à planilha
         listRA = ''.join(map(str, listRA))
 
-        # cv2.imshow('oi',img)
-        # cv2.waitKey()
         self.test_number += 1   
-        #cv2.imwrite('ProvasCorrigidas/getcount'+str(self.test_number)+'.jpeg', img)
-        # print(len(listOrder))
         print('Tipo de prova:',tipo)
 
 
         #ordena a lista
         listCxCy = sorted(listCxCy)
+        
 
 
         #adiciona "-" as questões sem alternativa
@@ -192,7 +189,7 @@ class Respostas:
         #print("##########")
 
         if (4 < len(listRA) or len(listRA) > 4 ):
-            raise Exception("Erro ao adquirir o numero de RA, favor verificar a prova")
+            raise Exception("Erro ao adquirir o numero de RA, favor verificar a prova "+test)
 
         return listRA, listCxCy
 
@@ -207,7 +204,12 @@ class Respostas:
         self.open_config_file()
         #pega o vetor de respostas do gabarito
         self.test_number = 0
-        _,self.gabarito = self.get_answers(contours, align_image)
+        print(align_image)
+        print("contours ",len(contours))
+        # if(np.max(align_image) == 0):
+        print(np.max(align_image))
+        _,self.gabarito = self.get_answers(contours, align_image, "gabarito")
+        print("saiu")
         if (self.gabarito is None or len(self.gabarito) < 50):
             raise Exception("Erro ao obter as respostas do gabarito.\n"+
                              "Verifique se há o mínimo de 50 respostas e se as mesmas estão bem assinaladas!")

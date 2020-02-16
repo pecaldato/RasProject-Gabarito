@@ -67,6 +67,9 @@ class Image:
             
             # Find homography
             h, mask = cv2.findHomography(points1, points2, cv2.RANSAC)
+            # cv2.imshow("teste",h)
+            # cv2.waitKey(0)
+            # cv2.destroyAllWindows()
 
             # Use homography
             height, width, channels = self.base.shape

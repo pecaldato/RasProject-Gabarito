@@ -13,7 +13,7 @@
         "align":
             {
                 "max_matches": 5000,
-                "good_match_percent": 0.1
+                "good_match_percent": 0.25
             }
         },
     "respostas":
