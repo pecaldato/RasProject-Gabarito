@@ -141,7 +141,7 @@ class Respostas:
                                         #cv2.drawContours(img, c, -1, (0,255,0), 2)
                 
                 #Pega o RA do aluno
-                if(448<cX<655 and 316<cY<420):
+                if(448<cX<655 and 316<cY<420 and self.json["size"]["min"]<cv2.contourArea(c)<self.json["size"]["max"]):
                     for x in range(0,10):
                         if(cX >= RAx[x][0] and cX <= RAx[x][1]):
                             for j in range(0,4):
@@ -191,6 +191,9 @@ class Respostas:
         #print(listCxCy2)
         #print("##########")
 
+        if (4 < len(listRA) or len(listRA) > 4 ):
+            raise Exception("Erro ao adquirir o numero de RA, favor verificar a prova")
+
         return listRA, listCxCy
 
     def open_config_file(self):
@@ -205,17 +208,17 @@ class Respostas:
         #pega o vetor de respostas do gabarito
         self.test_number = 0
         _,self.gabarito = self.get_answers(contours, align_image)
-        #if (self.gabarito is None or len(self.gabarito) < 50):
-            #raise Exception("Erro ao obter as respostas do gabarito.\n"+
-                             #"Verifique se há o mínimo de 50 respostas e se as mesmas estão bem assinaladas!")
+        if (self.gabarito is None or len(self.gabarito) < 50):
+            raise Exception("Erro ao obter as respostas do gabarito.\n"+
+                             "Verifique se há o mínimo de 50 respostas e se as mesmas estão bem assinaladas!")
 
     #retorna um dicionário com as listas de respostas corretas e incorretas
     def compare_answers(self, respostas, img10, name, RA):
-        #if (respostas is None or len(respostas) < 50):
-            #raise Exception("Erro ao comparar as respostas da prova com o gabarito!\n"+
-                            #"Este erro ocorre quando as respostas encontradas de determinada prova "+
-                            #"não estão de acordo com o número minimo de respostas aceitadas (50)."+
-                            #"Verifique a qualidade da imagem e do scaneamento!")
+        if (respostas is None or len(respostas) < 50):
+            raise Exception("Erro ao comparar as respostas da prova com o gabarito!\n"+
+                            "Este erro ocorre quando as respostas encontradas de determinada prova "+
+                            "não estão de acordo com o número minimo de respostas aceitadas (50)."+
+                            "Verifique a qualidade da imagem e do scaneamento!")
         
         wrongAnswers = []
         correctAnswers = []

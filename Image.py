@@ -10,16 +10,16 @@ class Image:
         if (self.base is None):
             raise Exception("Erro ao carregar o gabarito "+base)
         self.base = self.resize(self.base)
-        self.MAX_MATCHES = 5000
-        self.GOOD_MATCH_PERCENT = 0.05
         self.test_number = 0
         self.open_config_file()
+        self.MAX_MATCHES = int(self.json["align"]["max_matches"])
+        self.GOOD_MATCH_PERCENT = float(self.json["align"]["good_match_percent"])
 
 
     def open_config_file(self):
         with open('configs.json') as json_file:
             data = json.load(json_file)
-        self.json = data["image"]["bluer"]
+        self.json = data["image"]
 
     #Função para carregar a imagem
     def loadImage(self, gabaritoPath):
@@ -54,6 +54,7 @@ class Image:
 
             # Draw top matches
             imMatches = cv2.drawMatches(im1Gray, keypoints1, im2Gray, keypoints2, matches, None)
+            self.matchs = imMatches
             # cv2.imwrite("matches/"+name+".jpeg", imMatches)
             
             # Extract location of good matches
@@ -86,14 +87,15 @@ class Image:
             raise Exception("Imagem fornecida para achar os contornos é nula")
 
         try:
-            blurred = cv2.pyrMeanShiftFiltering(aligned_image,int(self.json["b1"]),int(self.json["b2"]))
+            blurred = cv2.pyrMeanShiftFiltering(aligned_image,int(self.json["bluer"]["b1"]),int(self.json["bluer"]["b2"]))
             gray = cv2.cvtColor(blurred,cv2.COLOR_BGR2GRAY)
             ret, threshold = cv2.threshold(gray,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
             contours,_ = cv2.findContours(threshold,cv2.RETR_LIST,cv2.CHAIN_APPROX_NONE)
+            self.bluer = blurred
             # cv2.imshow('aff', blurred)
             # cv2.waitKey()
             #itKey()
-            #cv2.imwrite('ImBlurr.jpeg', blurred)
+            # cv2.imwrite('bluer/'+test, blurred)
             # self.test_number += 1 
             # cv2.drawContours(aligned_image, contours, -1, (0,0,255), 2)
             # cv2.imwrite("contours/"+name+".jpeg", aligned_image)
@@ -101,6 +103,11 @@ class Image:
             raise Exception("Erro ao achar os contornos da imagem.")        
         
         return contours
+
+    def save_bluer(self,test):
+        cv2.imwrite('bluer/'+test+'.png', self.bluer)
+        cv2.imwrite('matchs/'+test+'.png', self.matchs)
+
 
     #Redimenciona a imagem para ficar no tamanho adequado
     def resize(self, img):

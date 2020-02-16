@@ -101,7 +101,7 @@ class Application(tk.Frame):
         try:
             self.caixaTexto.delete(1.0,tk.END)
 
-            base_gabarito_path = "base_prova.jpeg"
+            base_gabarito_path = "base_gabarito_nova.jpg"
             self.img = Image(base_gabarito_path)
 
             file_path = self.master.filename =  tk.filedialog.askopenfilename(initialdir = os.path.dirname(__file__),title = "Select file",filetypes = 
@@ -144,7 +144,7 @@ class Application(tk.Frame):
                     test_image = self.img.loadImage("ProvasParaCorrigir/"+test)
                     test_image = self.img.resize(test_image)  
                     align_test = self.img.align_image(test_image)
-                    contours = self.img.get_contours(align_test)
+                    contours = self.img.get_contours(align_test,)
                     ra, checked_answers = self.resp.get_answers(contours, align_test)
                     correct_answers = self.resp.compare_answers(checked_answers, align_test, test, ra)
 
@@ -153,8 +153,10 @@ class Application(tk.Frame):
                     # print(correct_answers)
                     #print("\n")
 
+                    ra = str(ra[:])
+                    self.img.save_bluer(ra)
                     if(self.json["move_tests"]):
-                        shutil.move("ProvasParaCorrigir/"+test, "ProvasCorrigidas/"+test) 
+                        shutil.move("ProvasParaCorrigir/"+test, "ProvasCorrigidas/"+ra+".png") 
 
                     self.caixaTexto.insert(tk.INSERT,'Corrigido '+test+"\n")
                     self.caixaTexto.see(tk.END)
