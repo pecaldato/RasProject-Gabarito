@@ -17,6 +17,7 @@ Para executar o programa corretor de gabaritos basta ter o sistema Windows e um 
 -Bibliotecas: numpy
               opencv-python
               xlsxwriter
+	      reportlab
 
 ```
 

@@ -67,9 +67,6 @@ class Image:
             
             # Find homography
             h, mask = cv2.findHomography(points1, points2, cv2.RANSAC)
-            # cv2.imshow("teste",h)
-            # cv2.waitKey(0)
-            # cv2.destroyAllWindows()
 
             # Use homography
             height, width, channels = self.base.shape
@@ -95,13 +92,6 @@ class Image:
             ret, threshold = cv2.threshold(gray,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
             contours,_ = cv2.findContours(threshold,cv2.RETR_LIST,cv2.CHAIN_APPROX_NONE)
             self.bluer = blurred
-            # cv2.imshow('aff', blurred)
-            # cv2.waitKey()
-            #itKey()
-            # cv2.imwrite('bluer/'+test, blurred)
-            # self.test_number += 1 
-            # cv2.drawContours(aligned_image, contours, -1, (0,0,255), 2)
-            # cv2.imwrite("contours/"+name+".jpeg", aligned_image)
         except:
             raise Exception("Erro ao achar os contornos da imagem.")        
         
